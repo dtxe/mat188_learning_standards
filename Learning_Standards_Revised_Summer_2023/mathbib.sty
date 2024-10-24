@@ -1,0 +1,279 @@
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{mathbib}
+              [2020/06/15 v1.0 class for typesetting a workbook]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document class stuff is defined here;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ---------- REQUIRED PACKAGES ---------- %
+
+\RequirePackage{expl3}
+
+
+%%
+%% LOAD DEPENDENCIES
+%%
+
+	% the geometry package will make sure the pdf page gets set to the same size as \paperheight and \paperwidth
+	% further, with these settings text will take up 100% of the page
+	\RequirePackage{geometry}
+	\RequirePackage[absolute]{textpos}
+	%\RequirePackage{everypage}
+	\RequirePackage{xparse}
+	\RequirePackage{environ}
+	%\RequirePackage{ifthen}
+	\RequirePackage{titlesec}
+	\RequirePackage{changepage}
+	\RequirePackage{eso-pic} % replaces `everyshi` to draw borders on the modules
+	\RequirePackage{multicol}
+        \RequirePackage{graphicx}
+        \RequirePackage{tikz}
+        \RequirePackage{varwidth}
+        \RequirePackage{hyperref}
+        \RequirePackage{forloop}
+        \RequirePackage{tcolorbox}
+        \RequirePackage{xcolor}
+        \RequirePackage{multiaudience}
+        \RequirePackage{Learning_Standards_Revised_Summer_2023/learningstandards2023}
+
+%%
+%% SET UP PRESETS AND DEFAULT ENVIRONMENTS
+
+%%
+\ExplSyntaxOn
+
+% We need some variants of several commands
+\cs_generate_variant:Nn \str_if_in:nnTF {eeTF}  % Doesn't work with current version of tectonic
+\cs_generate_variant:Nn \int_set:Nn {Ne}
+\cs_generate_variant:Nn \tl_set:Nn {Ne}
+\cs_generate_variant:Nn \prop_gput:Nnn {Nne}
+\cs_generate_variant:Nn \prop_get:NnN {NeN}
+\cs_generate_variant:Nn \prop_gput:Nnn {Neo}
+\cs_generate_variant:Nn \prop_gput:Nnn {Nee}
+\cs_generate_variant:Nn \prop_gput:Nnn {Nen}
+\cs_generate_variant:Nn \prop_gput:Nnn {NeV}
+\cs_generate_variant:Nn \prop_item:Nn {NV}
+\cs_generate_variant:Nn \prop_item:Nn {Ne}
+\cs_generate_variant:Nn \seq_gput_right:Nn {ce}
+\cs_generate_variant:Nn \seq_gput_right:Nn {Ne}
+\cs_generate_variant:Nn \int_to_arabic:n {v}
+\cs_generate_variant:Nn \tl_if_blank:nF {eF}
+\cs_generate_variant:Nn \tl_if_empty:nF {eF}
+\cs_generate_variant:Nn \tl_if_blank:nTF {eTF}
+
+
+% ---------- DICTIONARY SETUP ---------- %
+
+
+\seq_new:N \g_workbook_definitions_seq
+\prop_new:N \g_workbook_definitions_prop
+\keys_define:nn { _workbook_definitions } {
+	key .tl_set:N = \l_workbook_def_key_tl,
+	title .tl_set:N = \l_workbook_def_title_tl,
+        type .tl_set:N = \l_workbook_def_type_tl,
+        chap .tl_set:N = \l_workbook_def_chap_tl,
+}
+
+\seq_new:N \g_workbook_order_seq
+\prop_new:N \g_workbook_order_prop
+\keys_define:nn { _workbook_keys } {
+	num .tl_set:N = \l_workbook_keys_num_tl,
+	keys .tl_set:N = \l_workbook_def_keys_tl,
+}
+
+\seq_new:N \g_concepts_ref_seq
+\prop_new:N \g_concepts_ref_prop
+\keys_define:nn { _concept_keys } {
+	num .tl_set:N = \l_concepts_ref_num_tl,
+        void .tl_set:N = \l_concepts_ref_void_tl,
+	keys .tl_set:N = \l_concepts_ref_keys_tl,
+}
+
+
+% ---------- PRIMARY ENVIRONMENTS/COMMANDS ---------- %
+
+\newcounter{totalcon}
+\newcounter{chapdef-1}
+\setcounter{chapdef-1}{1}
+
+\NewDocumentCommand{\DefCounterCheck}{m}{
+    \ifcsname c@chapdef#1\endcsname
+    \else
+    \newtheoremstyle{defaultstyle}{10pt}{10pt}{}{}{\color{blue}\bfseries}{}{.5em}{}
+    \theoremstyle{defaultstyle}
+    \newcounter{chapdef#1}
+    \setcounter{chapdef#1}{#1}
+    \newtheorem{def#1}{Definition}[chapdef#1]
+    \newtheorem{thm#1}{Theorem}[chapdef#1]
+    \fi
+}
+
+
+\DeclareDocumentEnvironment{SaveRefCon}{m r[] + b}{
+	% set the \l_workbook_def_key_tl and \l_workbook_def_title_tl macros to have the correct content
+	\keys_set:nn { _concept_keys } {#2}
+
+	% Save the key in the definitions seq
+	\seq_gput_right:NV \g_concepts_ref_seq {\l_concepts_ref_num_tl}
+
+	% Save the definition information
+	\prop_gput:Neo \g_concepts_ref_prop {\l_concepts_ref_num_tl/num} \l_concepts_ref_num_tl
+        \prop_gput:Neo \g_concepts_ref_prop {\l_concepts_ref_void_tl/num} \l_concepts_ref_void_tl
+	\prop_gput:Neo \g_concepts_ref_prop {\l_concepts_ref_num_tl/keys} {#3}
+        \DefCounterCheck{#1}
+}{}
+
+
+\DeclareDocumentEnvironment{SaveConcept}{m r[] o +b}{
+	% set the \l_workbook_def_key_tl and \l_workbook_def_title_tl macros to have the correct content
+	\keys_set:nn { _workbook_definitions } {#2}
+
+	% Save the key in the definitions seq
+	\seq_gput_right:NV \g_workbook_definitions_seq {\l_workbook_def_key_tl}
+
+	% Save the definition information
+	\prop_gput:Neo \g_workbook_definitions_prop {\l_workbook_def_key_tl/key} \l_workbook_def_key_tl
+	\prop_gput:Neo \g_workbook_definitions_prop {\l_workbook_def_key_tl/title} \l_workbook_def_title_tl
+        \prop_gput:Nen \g_workbook_definitions_prop {\l_workbook_def_key_tl/type} {#1}
+        \prop_gput:Nen \g_workbook_definitions_prop {\l_workbook_def_key_tl/chap} {#3}
+	\prop_gput:Nen \g_workbook_definitions_prop {\l_workbook_def_key_tl/body} {#4}
+        \addtocounter{totalcon}{1}
+        \begin{SaveRefCon}{#3}[
+    		num=\arabic{totalcon},
+                void={}
+    	]
+        \l_workbook_def_key_tl
+        \end{SaveRefCon}
+}{}
+
+\DeclareDocumentEnvironment{SaveCitation}{r[] +b}{
+	% set the \l_workbook_def_key_tl and \l_workbook_def_title_tl macros to have the correct content
+	\keys_set:nn { _workbook_keys } {#1}
+
+	% Save the key in the definitions seq
+	\seq_gput_right:NV \g_workbook_order_seq {\l_workbook_keys_num_tl}
+
+	% Save the definition information
+	\prop_gput:Neo \g_workbook_order_prop {\l_workbook_keys_num_tl/num} \l_workbook_keys_num_tl
+	\prop_gput:Neo \g_workbook_order_prop {\l_workbook_keys_num_tl/keys} \l_workbook_def_keys_tl
+}{}
+
+% ---------- BIBLIOGRAPHY COMMANDS ---------- %
+
+\theoremstyle{plain}
+\newtheorem*{theorem}{\color{blue} Theorem}
+\newtheorem*{definition}{\color{blue} Definition}
+
+\SetNewAudience{DEF}
+
+% \definecolor{188teal}{cmyk}{0.44,0,0.11,0.22}
+\definecolor{188orange}{cmyk}{0,0.25,0.94,0}
+
+%DEFINE COUNTERS
+\newcounter{ndef}
+\newcounter{splits}
+\newcounter{KeyChecker}
+
+\NewDocumentCommand{\MathCite}{s m o}{
+\setcounter{KeyChecker}{1}
+\forloop{splits}{0}{\value{splits} < \value{ndef}}{
+\prop_get:NeN \g_workbook_order_prop {\arabic{splits}/keys} \l_workbook_keys_tl
+\str_if_eq:eeTF {#2} {\l_workbook_keys_tl}
+{
+\setcounter{KeyChecker}{-1}
+\setcounter{splits}{\value{ndef}}
+}{}
+}
+\str_if_eq:eeTF {\arabic{KeyChecker}}{-1}
+{}
+{
+    \begin{SaveCitation}[
+    		num=\arabic{ndef},
+    		keys=#2
+    	]
+     \end{SaveCitation}
+\addtocounter{ndef}{1}}
+\IfBooleanF{#1}{
+    \IfNoValueTF{#3}
+    {
+    \hyperlink{#2}{\textbf{#2}}
+    }
+    {
+    \hyperlink{#2}{\textbf{#3}}
+    }
+}
+\IfBooleanT{#1}{}
+}
+
+
+
+\NewDocumentCommand{\PrintSavedRender}{}{
+\begin{shownto}{DEF}
+\forloop{splits}{0}{\value{splits} < \value{ndef}}{
+    \prop_get:NeN \g_workbook_order_prop {\arabic{splits}/keys} \l_workbook_keys_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_workbook_keys_tl/title} \l_workbook_title_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_workbook_keys_tl/body} \l_workbook_body_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_workbook_keys_tl/type} \l_workbook_type_tl
+    % \str_if_eq:eeTF {X} {\l_workbook_title_tl}{}{\addtocounter{cursec}{1}}
+    % \hypertarget{\l_workbook_keys_tl}{\begin{\l_workbook_type_tl}[\l_workbook_title_tl] \l_workbook_body_tl \end{\l_workbook_type_tl}}
+    \hypertarget{\l_workbook_keys_tl}{\begin{\l_workbook_type_tl}[\l_workbook_title_tl] \l_workbook_body_tl \end{\l_workbook_type_tl}}
+    }
+\end{shownto}
+}
+
+\NewDocumentCommand{\test}{}{
+    \prop_get:NeN \g_workbook_order_prop {0/keys} \l_workbook_keys_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_workbook_keys_tl/title} \l_workbook_title_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_workbook_keys_tl/body} \l_workbook_body_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_workbook_keys_tl/type} \l_workbook_type_tl
+    \begin{\l_workbook_type_tl}[\l_workbook_title_tl] \l_workbook_body_tl \end{\l_workbook_type_tl}
+}
+
+\newtcolorbox{defbox}[1]{colback=white,
+colframe=188teal,fonttitle=\bfseries,
+title=Definition \ (#1)}
+
+\newtcolorbox{thmbox}[1]{colback=white,
+colframe=188purple,fonttitle=\bfseries,
+title=Theorem \ (#1)}
+
+\NewDocumentCommand{\PullConcept}{m}{
+    \prop_get:NeN \g_workbook_definitions_prop {#1/type} \l_workbook_type_tl
+    \IfStrEq{\l_workbook_type_tl}{definition}{\PullDef{#1}}{}
+    \IfStrEq{\l_workbook_type_tl}{theorem}{\PullThm{#1}}{}
+}{}
+
+\NewDocumentCommand{\PullDef}{m}{
+    \prop_get:NeN \g_workbook_definitions_prop {#1/title} \l_workbook_title_tl
+    \prop_get:NeN \g_workbook_definitions_prop {#1/body} \l_workbook_body_tl
+    \begin{defbox}{\l_workbook_title_tl}
+        \l_workbook_body_tl
+    \end{defbox}
+}
+
+
+\NewDocumentCommand{\PullThm}{m}{
+    \prop_get:NeN \g_workbook_definitions_prop {#1/title} \l_workbook_title_tl
+    \prop_get:NeN \g_workbook_definitions_prop {#1/body} \l_workbook_body_tl
+    \begin{thmbox}{\l_workbook_title_tl}
+        \l_workbook_body_tl
+    \end{thmbox}
+}
+
+\NewDocumentCommand{\PullSec}{m}{
+\subsection*{Chapter \ #1 \ Definitions}
+    \forloop{splits}{1}{\value{splits} < \value{totalcon}}{
+    \prop_get:NeN \g_concepts_ref_prop {\arabic{splits}/keys} \l_concepts_ref_keys_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_concepts_ref_keys_tl/title} \l_workbook_title_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_concepts_ref_keys_tl/body} \l_workbook_body_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_concepts_ref_keys_tl/chap} \l_workbook_chap_tl
+    \prop_get:NeN \g_workbook_definitions_prop {\l_concepts_ref_keys_tl/type} \l_workbook_type_tl
+    \IfStrEq{#1}{\l_workbook_chap_tl}{\IfStrEq{\l_workbook_type_tl}{definition}{\begin{def\l_workbook_chap_tl}[\l_workbook_title_tl] \l_workbook_body_tl \end{def\l_workbook_chap_tl}}{\begin{thm\l_workbook_chap_tl}[\l_workbook_title_tl] \l_workbook_body_tl \end{thm\l_workbook_chap_tl}}
+    }{}
+}
+\medskip
+}
+
+\ExplSyntaxOff

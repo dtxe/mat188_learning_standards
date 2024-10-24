@@ -1,0 +1,706 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 0
+%Camelia's notes after standards are used in 2023 on how to revise them:
+% -  key=ch0-CON-plane, key=ch0-VG-plane should be combined. 
+ % -  key=ch0-CON-vecline, key=ch0-CON-parline,should be combined
+% - key=ch0-CON-par, key=ch0-CON-pen should be combinced. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{BuildLSKey}[
+    key=ch0-WRIT-sets,
+    stan={I can describe \MathCite{set}[sets] using the set builder notation.}
+][1]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch0-COM-vecarith,
+    stan={I can perform algebraic arithmetic on  \MathCite{cvec}[vectors] in a \MathCite{ndimeuclidean}[Euclidean vector space] $\bbR^n$ (e.g., addition, scalar multiplication, \MathCite{norm}, and \MathCite{dprod}[dot product]).}
+][1]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch0-VG-vecarith,
+    stan={I can represent vector arithmetic geometrically for vectors in $\bbR^2$ and $\bbR^3$.}
+][1]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch0-CON-par,
+    stan={I can decide whether given vectors are \MathCite{parallel}.}
+][1]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch0-CON-per,
+    stan={I can decide whether given vectors are \MathCite{perpendicular}.}
+][1]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch0-COM-angle,
+    stan={I can compute the \MathCite{angle} between any two vectors.}
+][1]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch0-CON-vecline,
+    stan={I can represent a \MathCite{line} in $\bbR^2$ and $\bbR^3$ in vector form.}
+][1]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch0-CON-parline,
+    stan={I can represent a \MathCite{line} in $\bbR^2$ and $\bbR^3$ in parametric form.}
+][1]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch0-VG-line,
+    stan={Given an algebraic description of a line in $\bbR^2$ or $\bbR^3$, I can visualize the line.}
+][1]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch0-CON-plane,
+    stan={I can represent a \MathCite{plane} in $\bbR^3$ given a normal vector and a point.}
+][1]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch0-VG-plane,
+    stan={Given an algebraic description of a \MathCite{plane}, I can visualize the \MathCite{plane}.}
+][1]
+\end{BuildLSKey}
+
+%% This LS is missing, tentatively named ch0-VG-algplane
+%% "Given an algebraic description of a plane, I can visualize the plane"
+%%   - Simeon 2023 Oct 13
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{BuildLSKey}[
+    key=ch1-COM-rref,
+    stan={I can perform row reduction on any matrix and reduce it to \MathCite{rref}[REF] and \MathCite{rref}[RREF].}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-CON-rref,
+    stan={I can determine when a matrix is in \MathCite{rref}[REF] or \MathCite{rref}[RRFF] form.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-COM-augset,
+    stan={Given an augmented matrix of a \MathCite*{lineq}\MathCite{linsys}[linear system], I find the general solution to the system.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-COM-pslinsys,
+    stan={Given the general solution to a \MathCite*{lineq}\MathCite{linsys}[system of linear equations], I can find particular solutions.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-CON-augsoltype,
+    stan={Given the \MathCite{rref}[REF] of an augmented matrix, I can determine which type of solution the system has (no solution, a unique solution, infinitely many solutions).}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-CON-ranksoltype,
+    stan={I can identify the solution type of a system based on information about the \MathCite{rank} of its augmented and coefficient matrix.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-VG-gslinsys,
+    stan={Given a \MathCite{linsys}[system of linear equations] in $\bbR^2$ or $\bbR^3$,  I can visualize the system and its general solution.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-VG-pslinsys,
+    stan={Given the matrix form $A \vec x = \vec b$ where $\vec b$ is a vector in $\bbR^2$ or $\bbR^3$, I can visualize a particular solution for $\vec x$ in terms of writing $\vec b$ as a linear combination of the columns of $A$.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-VG-lincom,
+    stan={I can visualize the \MathCite{lincom}[linear combination] of vectors in $\bbR^2$ and $\bbR^3$.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-CON-matlincom,
+    stan={I can interpret \MathCite{matvec}[matrix-vector multiplication] in terms of a \MathCite{lincom}[linear combination] of the columns of the matrix.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-CON-matdotprod,
+    stan={I can interpret \MathCite{matvec}[matrix-vector multiplication] using dot products.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-COM-matarith,
+    stan={I can add matrices of the same size, multiply a matrix by a scalar and I can multiply a matrix into a vector if the dimensions match up.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-WRIT-gslinsys,
+    stan={I can describe the general solution of a system parametrically and as a \MathCite{lincom}[linear combination] of vectors using correct mathematical notation.}
+][2]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch1-WRIT-linsysnot,
+    stan={I can describe a system in \MathCite{matvec}[matrix-vector multiplication] notation.}
+][2]
+\end{BuildLSKey}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{BuildLSKey}[
+    key=ch2-CON-domcodom, 
+    stan={Given a \MathCite{lintrans}[linear transformation] in any form, I can determine its \MathCite{domcodom}[domain and codomain].}
+][3]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-CON-lintranscheck, 
+    stan={Given a \MathCite{function} from $\bbR^m$ to $\bbR^n$ I can apply the definition of the \MathCite{lintrans}[linear transformation] or the Matrices theorem to decide whether it is a linear map.}
+][3]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch2-COM-standmat, 
+    stan={Given a \MathCite{lintrans}[linear transformation] from $\bbR^m$ to $\bbR^n$ I can compute its standard matrix by computing the output of the standard vectors.}
+][3]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch2-COM-lintransoutput, 
+    stan={Given a \MathCite{lintrans}[linear transformation] $T$ in any form I can find $T(\vec x)$ for any vector $\vec x$.}
+][3]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-VG-unitlintrans, 
+    stan={Given a \MathCite{lintrans}[linear transformation] with \MathCite{domcodom}[domain and codomain] in $\bbR^2$ or $\bbR^3$ I can visualize the effect of the transformation on the unit square or the unit cube.}
+][3]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-CON-geotrans, 
+    stan={I can find (not memorize) the standard matrix representation of the geometric transformation on $\bbR^2$.}
+][3]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-VG-geotrans, 
+    stan={I can visualize the effect of the geometric \MathCite{lintrans}[linear transformation] on $\bbR^2$ and $\bbR^3$.}
+][3]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-CON-lintranscomp, 
+    stan={Given two \MathCite{lintrans}[linear transformations] $T$ and $S$, in any form, I can compute the standard matrix of $T\circ S$ or $S\circ T$ or show why they are not defined.}
+][4]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-VG-comp, 
+    stan={I can visualize the effect of the composition of two linear transformations on a given vector in $\bbR^2$ and $\bbR^3$.\MathCite*{matprod}}
+][4]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-COM-matvec, 
+    stan={Given matrices $A$ and $B$, I can compute $AB$, if defined, by applying $A$ to columns of $B$ using the matrix-vector multiplication.}
+][4]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-COM-matdotprod, 
+    stan={Given matrices $A$ and $B$, I can compute $AB$, if defined, by finding the $ij$-th entry of $AB$ directly by computing the dot product between the $i$th row of $A$ and the $j$th column of $B$.}
+][4]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-COM-matarith, 
+    stan={I know the algebraic properties of matrix arithmetic.}
+][4]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-COM-rrefinv, 
+    stan={Given a \MathCite{lintrans}[linear transformation] $T$ and its standard matrix $A$, I can perform row reduction on $A$ to decide whether $T$ is invertible.}
+][4]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch2-COM-inv, 
+    stan={Given a \MathCite{lintrans}[linear transformation] $T$ and its standard matrix $A$, if $T$ is invertible, I can find its inverse map $T^{-1}$, and the standard matrix representation of $T^{-1}$, denoted by $A^{-1}$.}
+][4]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch2-CON-surinj, 
+    stan={Given a \MathCite{lintrans}[linear transformation] $T:\mathbb R^m\to \mathbb R^n$ I can decide whether $T$ is \MathCite{surinj}[injective, surjective], and/or \MathCite{invfun}[invertible] or \MathCite{bijective}.}
+][4]
+\end{BuildLSKey}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{BuildLSKey}[
+    key=ch3-VG-subspace, 
+    stan={I can visualize all the \MathCite{subspace}[subspaces] of $\bbR$, $\bbR^2$, and $\bbR^3$.}
+][6]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch3-CON-subspacecheck, 
+    stan={Given a subset of $\bbR^n$, I can verify whether it is a \MathCite{subspace} or not.}
+][6]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch3-VG-span, 
+    stan={Given a set of vectors $\vec v_1, \cdots, \vec v_n$ in $\bbR$, $\bbR^2$ or $\bbR^3$ I can visualize \MathCite{span}[$\spn(\vec v_1, \cdots, \vec v_n)$].}
+][6]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-CON-span, 
+    stan={Given a set of vectors $\vec v_1, \cdots, \vec v_n$ in $\bbR^n$ I can describe \MathCite{span}[$\spn(\vec v_1, \cdots, \vec v_n)$] and decide whether any given vector is in it or not.}
+][6]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch3-CON-imkerdef, 
+    stan={I know the definition of the \MathCite{kernel}[kernel] and \MathCite{image}[image] of a linear transformation $T$ and can decide if a given vector is in $\ker (T)$ or $\im (T)$ or can find vectors in $\ker (T)$ and $\im (T)$.}
+][6]
+\end{BuildLSKey}
+
+
+
+
+\begin{BuildLSKey}[
+    key=ch3-WRIT-im, 
+    stan={Given a \MathCite{lintrans}[linear transformation] $T$, I can describe the \MathCite{image}[$\im (T)$] in set builder notation.}
+][6]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-WRIT-ker, 
+    stan={Given a \MathCite{lintrans}[linear transformation] $T$, I can describe the \MathCite{kernel}[$\ker (T)$] and \MathCite{image}[$\im (T)$] as a span of vectors.}
+][6]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-VG-imker, 
+    stan={Given a \MathCite{lintrans}[linear transformation] $T$ with domain or codomain $\bbR, \bbR^2, \bbR^3$ I can visualize \MathCite{kernel}[$\ker (T)$] and \MathCite{image}[$\im (T)$].}
+][6]
+\end{BuildLSKey}
+
+
+
+\begin{BuildLSKey}[
+    key=ch3-CON-gsker, 
+    stan={Given a linear transformation $T(\vec x)=A\vec x$, I can connect \MathCite{kernel}[$\ker (T)$] and \MathCite{image}[$\im (T)$] to the solutions to $A\vec x=\vec b$, for suitable choices of  $\vec b$.}
+][6]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-CON-injkersurim, 
+    stan={Given a \MathCite{lintrans}[linear transformation] $T$, I can connect the notion of \MathCite{surinj}[injective/sujective] to \MathCite{kernel}[$\ker (T)$]/\MathCite{image}[$\im (T)$] .}
+][6]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch3-COM-linind, 
+    stan={Given a set of vectors, I can determine if the set is \MathCite{linindep}[linearly independent].}
+][6]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-COM-bas, 
+    stan={Given a \MathCite{subspace}, I can determine its \MathCite{basis}.}
+][6]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-COM-dim, 
+    stan={Given a \MathCite{subspace}, I can determine its \MathCite{dim}[dimension].}
+][7]
+\end{BuildLSKey}
+
+
+
+
+
+\begin{BuildLSKey}[
+    key=ch3-COM-reduclinind, 
+    stan={Given a set of vectors, I can reduce it to a \MathCite{linindep}[linearly independent] set.}
+][6]
+\end{BuildLSKey}
+\begin{BuildLSKey}[
+    key=ch3-VG-redunvec, 
+    stan={Given a set of vectors, I can visualize if a vector is redundant.}
+][6]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-CON-kerlinind, 
+    stan={Given a linear transformation $T(\vec x)=A\vec x$, I can connect $\ker (T) $ with the \MathCite{linindep}[linearly independence] of columns of $A$ and $\im(T)$ with the \MathCite{span} of the columns of $A$.}
+][6]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch3-CON-kerrank, 
+    stan={I can connect the dimension of the kernel of a linear transformation to the dimension of its image through Rank-Nullity Theorem.}
+][7]
+\end{BuildLSKey}
+
+
+
+
+\begin{BuildLSKey}[
+    key=ch3-COM-bases, 
+    stan={Given a subspace $W$ of $\bbR^n$ described via a basis, I can construct other bases for $W$.}
+][7]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-COM-basvec, 
+    stan={I can take any vector $\vec v$ in any $\bbR^n$, take a basis $\mathcal B$ for $\bbR^n$, and find the $\mathcal B$ coordinates of $\vec v$ in $\bbR^n$.}
+][7]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-COM-matbas, 
+    stan={Given any two bases ${\mathcal B}_1, {\mathcal B}_2$ of $\bbR^n$, I can construct a matrix (change of basis matrix from ${\mathcal B}_1$ to ${\mathcal B}_2$) that take the ${\mathcal B}_1$ coordinates of $\vec v$ as an input and compute the ${\mathcal B}_2$ coordinates of $\vec v$ as an output.}
+][7]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-VG-vecbas, 
+    stan={Given a vector $\vec v\in \bbR^n$ ($n=1, 2$ or $3$) and bases ${\mathcal B}_1, {\mathcal B}_2$ of $\bbR^n$, I can visualize $[\vec v]_{{\mathcal B}_1}$ and $[\vec v]_{{\mathcal B}_2}$.}
+][7]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-COM-sbasmat, 
+    stan={Given a linear transformation $T:\bbR^n\to \bbR^n$, and a basis $\mathcal B$ for $\bbR^n$, I can compute the matrix of $T$ with respect to $\mathcal B$.}
+][7]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-CON-cbasmat, 
+    stan={I can connect the matrix representation of a linear transformation $T$ with respect to two different bases, using a change of basis matrix.}
+][7]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-VG-geobasis, 
+    stan={Given a geometric transformation $T$ in $\bbR^2$, I can find a basis $\mathcal B$ (assuming it exists), such that $T$ with respect to $\mathcal B$ is diagonal.}
+][7]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch3-VG-diaglintrans, 
+    stan={Given a basis $\mathcal B$ such that a linear transformation $T$ is diagonal, I can visualize $T$}
+][7]
+\end{BuildLSKey}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 4
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{BuildLSKey}*[
+    key=ch4-void, 
+    stan={ }
+]
+\end{BuildLSKey}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{BuildLSKey}[
+    key=ch5-CON-orthotype, 
+    stan={Given a set of vectors, I can determine if they are \MathCite{orthoset}[orthogonal], \MathCite{orthonoset}[orthonormal], or neither.}
+][8]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch5-COM-orthocomp, 
+    stan={Given a subspace $V$, I can describe the  \MathCite{orthocomp}[orthogonal complement] of $V$.}
+][8]
+\end{BuildLSKey}
+
+
+
+\begin{BuildLSKey}[
+    key=ch5-COM-vecdecomp, 
+    stan={Given a vector $\vec x$ in a subspace $V \subseteq \bbR^n$, I can decompose $\vec x$ into two components, one in $V$ and one in the  \MathCite{orthocomp}[orthogonal complement]  of $V$.}
+][8]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch5-COM-orthobas, 
+    stan={Given a vector $\vec x$ in $\bbR^n$ and a \MathCite{orthobasis}[orthonormal basis] $\mathcal{U}$, I can find $[\vec x]_{\mathcal U}$, the coordinates of $\vec x$ with respect to $\mathcal{U}$ without row reduction.}
+][8]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch5-VG-kerim, 
+    stan={I can visualize the kernel and image of the \MathCite{orthoproj}[orthogonal projection] onto a subspace $V$ of $\bbR^2, \bbR^3$.\MathCite*{orthocomp}}
+][8]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch5-COM-gram, 
+    stan={Given a basis $V$, I can apply the Gram-Schmidt process to transform $V$ into an \MathCite{orthobasis}[orthonormal basis].}
+][8]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch5-CON-ortho, 
+    stan={I can recognize if a linear transformation is orthogonal.}
+][9]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch5-VG-unitortho, 
+    stan={I can visualize the effect of an orthogonal linear transformation on the unit square/cube.}
+][9]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch5-COM-trans, 
+    stan={I understand computational properties of transposes.}
+][9]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch5-CON-inconsys, 
+    stan={Given an inconsistent system $A \vec x = \vec b$, I can find $\vec x^*$ such that $A\vec x^*$ is closest to $\vec b$.}
+][9]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch5-CON-projfit, 
+    stan={I can connect \MathCite{orthoproj}[projections] onto a subspace to \MathCite{leastsquare}[fitting a line] to a set of data points.}
+][9]
+\end{BuildLSKey}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 6
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{BuildLSKey}[
+    key=ch6-VG-unit, 
+    stan={I can visualize the absolute value of the \MathCite{det2}[determinant of a $2 \times 2$] and \MathCite{det3}[determinant of a $3 \times 3$] matrix as a factor by which the corresponding linear transformation changes the area of the unit square or the volume of the unit cube, respectively.}
+][5]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch6-VG-detsign, 
+    stan={I can interpret the sign of the determinant of a matrix geometrically.}
+][5]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch6-COM-det, 
+    stan={I can compute the determinant of an arbitrary square matrix.}
+][5]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch6-CON-bilin, 
+    stan={I can use the fact that the determinant is multilinear in rows and columns to simplify/compute the determinant of a matrix.}
+][5]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch6-COM-detprop, 
+    stan={Given square matrices $A$ and $B$, and a scalar $k$,  I can relate the $\det (AB), \det (A^T), \det (kA)$ and $\det (A^{-1})$ to $\det A$ and $\det B$.}
+][5]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch6-CON-invcheck, 
+    stan={I can use determinant to determine whether a given linear transformation is invertible.}
+][5]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch6-COM-inv, 
+    stan={Given a $2 \times 2$ matrix $A$, I can compute the inverse of $A$ using the matrix inverse formula.}
+][5]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch6-CON-rowred, 
+    stan={I can use row reduction or multiplication by \MathCite{elemmat}[elementry matrices] to compute the determinant of a matrix.}
+][5]
+\end{BuildLSKey}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 7
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\begin{BuildLSKey}[
+    key=ch7-CON-diaglintrans, 
+    stan={Given a linear transformation $T(\vec x) = A \vec x$, I can connect the \MathCite{diagonalizable}[diagonalizbility] of $A$ to the existence of an \MathCite{eigenbasis}[eigenbasis] for $T$.}
+][10]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch7-VG-geotrans, 
+    stan={Given a geometric transformation in $\bbR^2$, I can visualize its \MathCite{eigenvecval}[eigenvectors] and their corresponding \MathCite{eigenvecval}[eigenvalues].}
+][10]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch7-COM-eigenvalue, 
+    stan={Given a linear transformation $T(\vec x)$, I can verify whether a vector $\vec v$ is an \MathCite{eigenvecval}[eigenvectors] and if so, determine the corresponding \MathCite{eigenvecval}[eigenvalues].}
+][10]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch7-COM-algmult, 
+    stan={Given a linear transformation $A \vec x$, I can find its \MathCite{eigenvecval}[eigenvalues] and their \MathCite{algmult}[algebraic multiplicity] using the \MathCite{charpolmat}[characteristic polynomial].}
+][10]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch7-COM-charpoly, 
+    stan={Given a  \MathCite{charpolmat}[characteristic polynomial] of a $2 \times 2$ matrix, I can determine determinant and \MathCite{trace}[trace] of $A$.}
+][10]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch7-COM-eigenbas, 
+    stan={Given a linear transformation $T(\vec x)$ and eigenvalue $\lambda$, I can find a basis for the \MathCite{eigenspace}[eigenspace] corresponding to $\lambda$ and its \MathCite{geomult}[geometric multiplicity].}
+][10]
+\end{BuildLSKey}
+
+
+
+\begin{BuildLSKey}[
+    key=ch7-VG-eigenspace, 
+    stan={Given a linear transformation in $\bbR^2, \bbR^3$, I can visualize all the eigenspaces of $T$.}
+][11]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch7-CON-diagmult, 
+    stan={Given a linear transformation $T$, I can state a condition regarding the diagonalizability of $T$, in terms of the algebraic and geometric multiplicities of its eigenvalues.}
+][11]
+\end{BuildLSKey}
+
+
+\begin{BuildLSKey}[
+    key=ch7-CON-diagcmat, 
+    stan={I can diagonalize a matrix $A$, if possible, by finding a change of basis matrix $C$ and a diagonal matrix $D$ such that $A=CDC^{-1}$.}
+][11]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch7-COM-dynsys, 
+    stan={Given a diagonalizable $A$, I can predict long term behavior of a dynamical system whose transition matrix is $A$}
+][11]
+\end{BuildLSKey}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 8
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{BuildLSKey}[
+    key=ch8-COM-diagsym, 
+    stan={Given a symmetric matrix $A$, I can orthogonally diagonalize $A$.}
+][11]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=ch8-CON-specthm, 
+    stan={Given a symmetric matrix $A$, I can visualize the eigensaces of $A$}
+][11]
+\end{BuildLSKey}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%GENERAL GOALS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{BuildLSKey}[
+    key=chg-WRIT-matnot, 
+    stan={I can correctly use mathematical notation.}
+]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=chg-WRIT-matcom, 
+	stan={I can correctly and effectively communicate ideas in mathematical language.}
+]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=chg-CON-tf, 
+	stan={Given a statement I can decide whether it is true or false, and correctly justify my decision.}
+]
+\end{BuildLSKey}
+
+\begin{BuildLSKey}[
+    key=chg-CON-exp, 
+	  stan={Given a description of a mathematical object I can find an explicit example that satisfies that definition.}
+]
+\end{BuildLSKey}
+
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % %DEFAULT RESET
+% % %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% % \begin{BuildLSKey}*[
+% %     key=ch<num>-void, 
+% % 	stan={}
+% % ]
+% % \end{BuildLSKey}

@@ -1,0 +1,383 @@
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{learningstandards2023}
+              [2020/06/15 v1.0 class for typesetting a workbook]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%REQUIRED PACKAGES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+        \RequirePackage{forloop}
+        \RequirePackage{xstring}
+        \RequirePackage{enumitem}
+        \RequirePackage{etoolbox}
+        \RequirePackage{hyperref}
+        \RequirePackage{Learning_Standards_Revised_Summer_2023/mathbib}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%COUNTERS SETUP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcounter{cursec}
+\setcounter{cursec}{0}
+\newcounter{nstandards}
+
+\newcounter{split}
+\newcounter{ngoals-1}
+\setcounter{ngoals-1}{1}
+\newcounter{lsnum}
+
+\ExplSyntaxOn
+
+% We need some variants of several commands
+\cs_generate_variant:Nn \str_if_in:nnTF {eeTF}  % Doesn't work with current version of tectonic
+\cs_generate_variant:Nn \int_set:Nn {Ne}
+\cs_generate_variant:Nn \tl_set:Nn {Ne}
+\cs_generate_variant:Nn \prop_gput:Nnn {Nne}
+\cs_generate_variant:Nn \prop_get:NnN {NeN}
+\cs_generate_variant:Nn \prop_gput:Nnn {Neo}
+\cs_generate_variant:Nn \prop_gput:Nnn {Nee}
+\cs_generate_variant:Nn \prop_gput:Nnn {Nen}
+\cs_generate_variant:Nn \prop_gput:Nnn {NeV}
+\cs_generate_variant:Nn \prop_item:Nn {NV}
+\cs_generate_variant:Nn \prop_item:Nn {Ne}
+\cs_generate_variant:Nn \seq_gput_right:Nn {ce}
+\cs_generate_variant:Nn \seq_gput_right:Nn {Ne}
+\cs_generate_variant:Nn \int_to_arabic:n {v}
+\cs_generate_variant:Nn \tl_if_blank:nF {eF}
+\cs_generate_variant:Nn \tl_if_empty:nF {eF}
+\cs_generate_variant:Nn \tl_if_blank:nTF {eTF}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%AUDIENCE SETUP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% learning standard categories audience 
+\SetNewAudience{WRIT}
+\SetNewAudience{COM}
+\SetNewAudience{CON}
+\SetNewAudience{VG}
+\SetNewAudience{DEF}
+\SetNewAudience{DEV}
+
+% set the current audiences
+% add warning
+
+% audience specific environments
+\DeclareDocumentEnvironment{WRIT}{m o}{
+    \item #1 \ 
+    \IfNoValueTF{#2}
+    {
+    (\textit{Writing})
+    }
+    {
+    (\textit{Writing})
+    }
+}{}
+
+\DeclareDocumentEnvironment{COM}{m o}{
+    \item #1 \
+    \IfNoValueTF{#2}
+    {
+    (\textit{Computation})
+    }
+    {
+   \textbf{(\textit{Computation})}
+    }
+}{}
+
+\DeclareDocumentEnvironment{CON}{m o}{
+    \item #1 \  
+    \IfNoValueTF{#2}
+    {
+    (\textit{Conceptual})
+     }
+    {
+    \textbf{(\textit{Conceptual})}
+    }
+}{}
+
+\DeclareDocumentEnvironment{VG}{m o}{
+    \item #1 \
+    \IfNoValueTF{#2}
+    {
+    (\textit{Visual/Geometry})
+     }
+    {
+    \textbf{(\textit{Visual/Geometry})}
+    }
+}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LEARNING STANDARD DICTIONARY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\seq_new:N \g_learningstandards_comp_seq
+\prop_new:N \g_learningstandards_comp_prop
+\keys_define:nn { _learningstandards_comp } {
+	key .tl_set:N = \l_learningstandards_key_tl,
+	stan .tl_set:N = \l_learningstandards_stan_tl,
+        pce .tl_set:N = \l_learningstandards_pce_tl,
+}
+
+
+\seq_new:N \g_learningstandards_ref_seq
+\prop_new:N \g_learningstandards_ref_prop
+\keys_define:nn { _learningstandards_keys } {
+	num .tl_set:N = \l_learningstandards_ref_num_tl,
+	keys .tl_set:N = \l_learningstandards_ref_keys_tl,
+        body .tl_set:N = \l_learningstandards_ref_body_tl,
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%MAIN COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \makeatletter
+% \newcommand*\checkcounter[1]{%
+% \StrBetween{#1}{ch}{-}[\@chapnum]
+%   \IfStrEq{\@chapnum}{g}{\StrSubstitute{\@chapnum}{g}{9}[\@chapnum]}{}
+%   \ifcsname c@ngoals\@chapnum\endcsname
+%   \else
+%   \newcounter{ngoals\@chapnum}
+%   \addtocounter{ngoals\@chapnum}{\value{ngoals\SubOne{\@chapnum}}}
+%   \fi
+%   \addtocounter{ngoals\@chapnum}{1}
+% }
+% \makeatother
+
+\NewDocumentCommand{\ChapCounterCheck}{m}{
+    \IfStrEq{\@chapnum}{g}{\StrSubstitute{\@chapnum}{g}{9}[\@chapnum]}{}
+    \ifcsname c@ngoals\@chapnum\endcsname
+    \else
+    \newcounter{ngoals\@chapnum}
+    \addtocounter{ngoals\@chapnum}{\value{ngoals\SubOne{\@chapnum}}}
+    \fi
+    \addtocounter{ngoals\@chapnum}{1}
+}
+
+\NewDocumentCommand{\PCECounterCheck}{m}{
+    \IfStrEq{\@chapnum}{g}{\StrSubstitute{\@chapnum}{g}{9}[\@chapnum]}{}
+    \ifcsname c@ngoals\@chapnum\endcsname
+    \else
+    \newcounter{ngoals\@chapnum}
+    \addtocounter{ngoals\@chapnum}{\value{ngoals\SubOne{\@chapnum}}}
+    \fi
+    \addtocounter{ngoals\@chapnum}{1}
+}
+
+
+\DeclareDocumentEnvironment{SaveRefLS}{r[] + b}{
+	% set the \l_workbook_def_key_tl and \l_workbook_def_title_tl macros to have the correct content
+	\keys_set:nn { _learningstandards_keys } {#1}
+
+	% Save the key in the definitions seq
+	\seq_gput_right:NV \g_learningstandards_ref_seq {\l_learningstandards_ref_num_tl}
+
+	% Save the definition information
+	\prop_gput:Neo \g_learningstandards_ref_prop {\l_learningstandards_ref_num_tl/num} \l_learningstandards_ref_num_tl
+	\prop_gput:Neo \g_learningstandards_ref_prop {\l_learningstandards_ref_num_tl/keys} \l_learningstandards_ref_keys_tl
+        \prop_gput:Neo \g_learningstandards_ref_prop {\l_learningstandards_ref_num_tl/body} {#2}
+        \ChapCounterCheck{#2}
+}{}
+
+% categorize command which uses the audience environments above
+% disregard error prompt on \item lines
+\NewDocumentCommand{\categorize}{s m m}{
+    \IfBooleanT{#1}{
+    \begin{shownto}{#2}
+    \begin{#2}{#3}[x] \end{#2}
+    \end{shownto}
+    }
+    \IfBooleanF{#1}{
+    \begin{shownto}{#2}
+    \begin{#2}{#3} \end{#2}
+    \end{shownto}
+    }
+}
+
+\newcommand\SubOne[1]{%
+  \number\numexpr#1-1\relax%
+}
+
+\newcommand\AddOne[1]{%
+  \number\numexpr#1+1\relax%
+}
+
+
+\DeclareDocumentEnvironment{BuildLSKey}{s r[] o}{
+    \keys_set:nn { _learningstandards_comp } {#2}
+    \seq_gput_right:NV \g_learningstandards_comp_seq \l_learningstandards_key_tl
+    \prop_gput:Neo \g_learningstandards_comp_prop {\l_learningstandards_key_tl/key} \l_learningstandards_key_tl
+    \prop_gput:Neo \g_learningstandards_comp_prop {\l_learningstandards_key_tl/stan} \l_learningstandards_stan_tl
+    \prop_gput:Neo \g_learningstandards_comp_prop {\l_learningstandards_key_tl/pce} {#3}
+    \StrBetween{\l_learningstandards_key_tl}{ch}{-}[\@chapnum]
+    \IfStrEq{\@chapnum}{g}{\StrSubstitute{\@chapnum}{g}{9}[\@chapnum]}{}
+    \IfBooleanT{#1}{\newcounter{ngoals\@chapnum} \setcounter{ngoals\@chapnum}{\arabic{ngoals\SubOne{\@chapnum}}}}
+    \IfBooleanF{#1}{
+    \addtocounter{nstandards}{1}
+    \begin{SaveRefLS}[
+    		num=\arabic{nstandards},
+    		keys=
+    	]
+    \l_learningstandards_key_tl
+    \end{SaveRefLS}
+    }
+}{}
+
+
+\NewDocumentCommand{\PullLS}{s o}{
+\IfNoValueTF{#2}{}{
+    \IfBooleanT{#1}{
+    \setcounter{lsnum}{#2}
+    $^{LS^{\fnsymbol{lsnum}}}$
+    }
+    \IfBooleanF{#1}{
+    \setcounter{lsnum}{1}
+    \renewcommand*{\do}[1]{
+    \prop_get:NeN \g_learningstandards_comp_prop {##1/key} \l_learningstandards_key_tl
+    \prop_get:NeN \g_learningstandards_comp_prop {##1/stan} \l_learningstandards_stan_tl
+    \StrBetween[1,2]{\l_learningstandards_key_tl}{-}{-}[\@category]
+    \begin{itemize}[label={LS$^{\fnsymbol{lsnum}}$}]
+        \categorize{\@category}{\l_learningstandards_stan_tl}
+    \end{itemize}
+    \addtocounter{lsnum}{1}
+    }
+    \docsvlist{#2}
+    }
+    }
+}
+
+\NewDocumentCommand{\PulledLS}{m}{
+\prop_get:NeN \g_learningstandards_comp_prop {#1/stan} \l_learningstandards_stan_tl
+    \l_learningstandards_stan_tl
+}
+    
+
+\NewDocumentCommand{\PullChap}{m}{
+\StrRight{#1}{1}[\lastletter]
+\subsection*{Chapter \ \IfStrEq{\lastletter}{9}{General}{\lastletter} \ Learning \ Standards}
+\begin{enumerate} %Comment about how to switch from numbered to bullet
+\forloop{split}{\arabic{ngoals\SubOne{\lastletter}}}{\value{split} < \arabic{ngoals\lastletter}}{
+    \prop_get:NeN \g_learningstandards_ref_prop {\arabic{split}/body} \l_learningstandards_ref_body_tl
+    \prop_get:NeN \g_learningstandards_comp_prop {\l_learningstandards_ref_body_tl/stan} \l_learningstandards_stan_tl
+    \StrBetween[1,2]{\l_learningstandards_ref_body_tl}{-}{-}[\@category]
+    \categorize{\@category}{\l_learningstandards_stan_tl }
+    \showto{DEV}{\showto{\@category}{\\ \l_learningstandards_ref_body_tl}}
+    }
+\end{enumerate}
+}
+
+\NewDocumentCommand{\PullPCE}{m}{
+\subsection*{PCE \ #1 \ Learning \ Standards}
+    \begin{enumerate}
+    \forloop{split}{1}{\value{split} < \arabic{ngoals9}}{
+    \prop_get:NeN \g_learningstandards_ref_prop {\arabic{split}/body} \l_learningstandards_ref_body_tl
+    \prop_get:NeN \g_learningstandards_comp_prop {\l_learningstandards_ref_body_tl/stan} \l_learningstandards_stan_tl
+    \prop_get:NeN \g_learningstandards_comp_prop {\l_learningstandards_ref_body_tl/pce} \l_learningstandards_pce_tl
+    \IfStrEq{#1}{\l_learningstandards_pce_tl}{\item \l_learningstandards_stan_tl}{}
+    }
+   \end{enumerate}
+}
+
+
+\NewDocumentCommand{\AllChap}{}{
+\subsection*{All \ Visual \ Learning \ Standards}
+\begin{enumerate} %Comment about how to switch from numbered to bullet
+\forloop{split}{1}{\value{split} < \arabic{ngoals9}}{
+    \prop_get:NeN \g_learningstandards_ref_prop {\arabic{split}/body} \l_learningstandards_ref_body_tl
+    \prop_get:NeN \g_learningstandards_comp_prop {\l_learningstandards_ref_body_tl/stan} \l_learningstandards_stan_tl
+    \StrBetween[1,2]{\l_learningstandards_ref_body_tl}{-}{-}[\@category]
+    \categorize{\@category}{\l_learningstandards_stan_tl }
+    \showto{DEV}{\showto{\@category}{\\ \l_learningstandards_ref_body_tl}}
+    }
+\end{enumerate}
+}
+
+
+
+
+
+% \DeclareDocumentEnvironment{SaveRefLS}{r[] + b}{
+% 	% set the \l_workbook_def_key_tl and \l_workbook_def_title_tl macros to have the correct content
+% 	\keys_set:nn { _learningstandards_keys } {#1}
+
+% 	% Save the key in the definitions seq
+% 	\seq_gput_right:NV \g_learningstandard_ref_seq {\l_learningstandard_ref_num_tl}
+
+% 	% Save the definition information
+% 	\prop_gput:Neo \g_learningstandard_ref_prop {\l_learningstandard_ref_num_tl/num} \l_learningstandard_ref_num_tl
+% 	\prop_gput:Neo \g_learningstandard_ref_prop {\l_learningstandard_ref_num_tl/keys} \l_learningstandard_ref_keys_tl
+%         \prop_gput:Neo \g_learningstandard_ref_prop {\l_learningstandard_ref_num_tl/body} {#2}
+% }{}
+
+% % categorize command which uses the audience environments above
+% % disregard error prompt on \item lines
+% \NewDocumentCommand{\categorize}{s m m}{
+%     \IfBooleanT{#1}{
+%     \begin{shownto}{#2}
+%     \begin{#2}{#3}[x] \end{#2}
+%     \end{shownto}
+%     }
+%     \IfBooleanF{#1}{
+%     \begin{shownto}{#2}
+%     \begin{#2}{#3} \end{#2}
+%     \end{shownto}
+%     }
+%     \addtocounter{nstandards}{1}
+% }
+
+% \DeclareDocumentEnvironment{BuildLSKey}{s r[]}{
+%     \IfBooleanT{#1}{
+%     \newcounter{ngoals\arabic{cursec}}
+%     \setcounter{ngoals\arabic{cursec}}{\value{nstandards}}
+%     \addtocounter{cursec}{1}
+%     \setcounter{nstandards}{0}
+%     }
+%     \addtocounter{nstandards}{1}
+%     \keys_set:nn { _learningstandards_comp } {#2}
+%     \seq_gput_right:NV \g_learningstandards_comp_seq \l_learningstandards_key_tl
+%     \prop_gput:Neo \g_learningstandards_comp_prop {\l_learningstandards_key_tl/key} \l_learningstandards_key_tl
+%     \prop_gput:Neo \g_learningstandards_comp_prop {\l_learningstandards_key_tl/stan} \l_learningstandards_stan_tl
+% }{}
+
+% \NewDocumentCommand{\PullLS}{s o}{
+% \IfNoValueTF{#2}{}{
+%     \IfBooleanT{#1}{
+%     \renewcommand*{\do}[1]{
+%     \prop_get:NeN \g_learningstandards_comp_prop {##1/key} \l_learningstandard_key_tl
+%     \hyperlink{##1}{$^{\text{LS \ ##1}}$} \ \
+%     }
+%     \docsvlist{#2}
+%     }
+%     \IfBooleanF{#1}{
+%     \renewcommand*{\do}[1]{
+%     \prop_get:NeN \g_learningstandards_comp_prop {##1/key} \l_learningstandards_key_tl
+%     \prop_get:NeN \g_learningstandards_comp_prop {##1/stan} \l_learningstandards_stan_tl
+%     \begin{itemize}[label={LS \ ##1}]
+%         \l_learningstandards_stan_tl
+%     \end{itemize}
+%     }
+%     \docsvlist{#2}
+%     }
+%     }
+% }
+
+% \NewDocumentCommand{\PullChap}{m}{
+% \StrRight{#1}{1}[\lastletter]
+% \subsection*{Chapter \ \lastletter \ Learning \ Standards}
+% \begin{enumerate} %Comment about how to switch from numbered to bullet
+% \forloop{split}{1}{\value{split} < \the\numexpr\value{#1}+1\relax}{
+%     \prop_get:NeN \g_learningstandards_comp_prop {\lastletter.\arabic{split}/stan} \l_learningstandards_stan_tl
+%     \hypertarget{\lastletter.\arabic{split}}{\l_learningstandards_stan_tl}
+%     }
+% \end{enumerate}
+% }
+
+
+\ExplSyntaxOff

@@ -1,0 +1,321 @@
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{questionbank}
+              [2020/06/15 v1.0 class for typesetting a workbook]
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document class stuff is defined here;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ---------- REQUIRED PACKAGES ---------- %
+
+\RequirePackage{expl3}
+
+
+%%
+%% LOAD DEPENDENCIES
+%%
+
+	% the geometry package will make sure the pdf page gets set to the same size as \paperheight and \paperwidth
+	% further, with these settings text will take up 100% of the page
+	\RequirePackage[
+%showframe,
+		]{geometry}
+	\RequirePackage[absolute]{textpos}
+	%\RequirePackage{everypage}
+	\RequirePackage{xparse}
+	\RequirePackage{environ}
+	\RequirePackage{ifthen}
+	\RequirePackage{titlesec}
+	\RequirePackage{changepage}
+	\RequirePackage{eso-pic} % replaces `everyshi` to draw borders on the modules
+	\RequirePackage{multicol}
+        \RequirePackage{graphicx}
+        \RequirePackage{varwidth}
+        \RequirePackage{hyperref}
+        \RequirePackage{multiaudience}
+        \RequirePackage{xstring}
+        \RequirePackage{forloop}
+        \RequirePackage[most]{tcolorbox}
+        \usepackage{pstricks}
+        \RequirePackage{Learning_Standards_Revised_Summer_2023/learningstandards2023}
+
+%%
+%% SET UP PRESETS AND DEFAULT ENVIRONMENTS
+
+%%
+\ExplSyntaxOn
+
+% We need some variants of several commands
+\cs_generate_variant:Nn \str_if_in:nnTF {eeTF}  % Doesn't work with current version of tectonic
+\cs_generate_variant:Nn \int_set:Nn {Ne}
+\cs_generate_variant:Nn \tl_set:Nn {Ne}
+\cs_generate_variant:Nn \prop_gput:Nnn {Nne}
+\cs_generate_variant:Nn \prop_get:NnN {NeN}
+\cs_generate_variant:Nn \prop_gput:Nnn {Neo}
+\cs_generate_variant:Nn \prop_gput:Nnn {Nee}
+\cs_generate_variant:Nn \prop_gput:Nnn {Nen}
+\cs_generate_variant:Nn \prop_gput:Nnn {NeV}
+\cs_generate_variant:Nn \prop_item:Nn {NV}
+\cs_generate_variant:Nn \prop_item:Nn {Ne}
+\cs_generate_variant:Nn \seq_gput_right:Nn {ce}
+\cs_generate_variant:Nn \seq_gput_right:Nn {Ne}
+\cs_generate_variant:Nn \int_to_arabic:n {v}
+\cs_generate_variant:Nn \tl_if_blank:nF {eF}
+\cs_generate_variant:Nn \tl_if_empty:nF {eF}
+\cs_generate_variant:Nn \tl_if_blank:nTF {eTF}
+
+
+% ---------- QUESTION TYPE ENVIRONMENT SETUP ---------- %
+
+
+\newcounter{ntask}
+\newcounter{nexercise}
+\newcounter{nproblem}
+\newcounter{nquestion}
+\newcounter{ndevelopmental}
+\newcounter{nsbg}
+\newcounter{bigtot}
+
+\newtheoremstyle{defaultstyle}{3pt}{3pt}{}{}{}{}{.5em}{}
+\theoremstyle{defaultstyle}
+\newtheorem{task}[ntask]{Task}
+\newtheorem*{exercise}{\color{orange} Exercise}
+\newtheorem*{fact}{\color{green} Fact}
+\newtheorem*{warn}{\color{red} Warning}
+\newtheorem*{remark}{\color{purple} Remark}
+\newtheorem*{example}{\color{pink} Example}
+\newtheorem{problem}[nproblem]{\color{orange} Task}
+\newtheorem{question}[nquestion]{Question}
+\newtheoremstyle{boxfont}{3pt}{3pt}{\color{white}}{}{\color{white}\bfseries}{}{.5em}{}
+\theoremstyle{boxfont}
+\newtheorem{dev}[ndevelopmental]{Developmental}
+\newtheorem{sbg}[nsbg]{SBG}
+\newtheorem*{exa}{Example}
+\newtheorem*{tbd}{TBD}
+
+
+% ---------- AUDIENCE SETUP ---------- %
+
+
+\SetNewAudience{SOL}
+\SetNewAudience{GRAD}
+
+
+% ---------- COLOUR PALETTE AND TEXT BOXES ---------- %
+\newtcolorbox{qbox}[1]{breakable,colback=white,
+colframe=188teal,fonttitle=\bfseries,
+title=#1}
+
+\newtcolorbox{lsbox}{breakable,colback=white,
+colframe=188purple,fonttitle=\bfseries,
+title=Learning \ Standards}
+
+\newtcolorbox{solbox}{breakable,colback=white,
+colframe=188yellow,fonttitle=\bfseries,
+title=Solution}
+
+\newtcolorbox{rubbox}{breakable,colback=white,
+colframe=188gray,fonttitle=\bfseries,
+title=Rubric}
+
+
+% ---------- DICTIONARY SETUP ---------- %
+
+
+\seq_new:N \g_questionbank_questions_seq
+\prop_new:N \g_questionbank_questions_prop
+\keys_define:nn { _questionbank_questions } {
+	key .tl_set:N = \l_questionbank_key_tl,
+	prompt .tl_set:N = \l_questionbank_prompt_tl,
+        type .tl_set:N = \l_questionbank_type_tl,
+        standards .tl_set:N = \l_questionbank_standards_tl,
+        rubric .tl_set:N = \l_questionbank_rubric_tl,
+        solution .tl_set:N = \l_questionbank_solution_tl,
+}
+
+
+\seq_new:N \g_question_ref_seq
+\prop_new:N \g_question_ref_prop
+\keys_define:nn { _question_keys } {
+	num .tl_set:N = \l_question_ref_num_tl,
+	keys .tl_set:N = \l_question_ref_keys_tl,
+        body .tl_set:N = \l_question_ref_body_tl,
+}
+
+
+% ---------- PRIMARY ENVIRONMENTS/COMMANDS ---------- %
+
+
+\DeclareDocumentEnvironment{SaveRefQ}{r[] + b}{
+	% set the \l_workbook_def_key_tl and \l_workbook_def_title_tl macros to have the correct content
+	\keys_set:nn { _question_keys } {#1}
+
+	% Save the key in the definitions seq
+	\seq_gput_right:NV \g_question_ref_seq {\l_question_ref_num_tl}
+
+	% Save the definition information
+	\prop_gput:Neo \g_question_ref_prop {\l_question_ref_num_tl/num} \l_question_ref_num_tl
+	\prop_gput:Neo \g_question_ref_prop {\l_question_ref_num_tl/keys} \l_question_ref_keys_tl
+    \prop_gput:Neo \g_question_ref_prop {\l_question_ref_num_tl/body} {#2}
+}{}
+
+
+\DeclareDocumentEnvironment{SaveQuestion}{r[] o o +b}{
+	% set the \l_workbook_def_key_tl and \l_workbook_def_title_tl macros to have the correct content
+	\keys_set:nn { _questionbank_questions } {#1}
+
+	% Save the key in the definitions seq
+	\seq_gput_right:NV \g_questionbank_questions_seq {\l_questionbank_key_tl}
+
+	% Save the definition information
+        \StrBehind[3]{\l_questionbank_key_tl}{-}[\@questiontype]
+        \prop_gput:Neo \g_questionbank_questions_prop {\l_questionbank_key_tl/key} \l_questionbank_key_tl
+	  \prop_gput:Neo \g_questionbank_questions_prop {\l_questionbank_key_tl/prompt} \l_questionbank_prompt_tl
+        \prop_gput:Neo \g_questionbank_questions_prop {\l_questionbank_key_tl/type} {\@questiontype}
+        \prop_gput:Neo \g_questionbank_questions_prop {\l_questionbank_key_tl/standards} {\PullLS[#2]}
+        \prop_gput:Neo \g_questionbank_questions_prop {\l_questionbank_key_tl/rubric} {\begin{BuildRubric}{#2}{#3}{\l_questionbank_type_tl} \end{BuildRubric}}
+	  \prop_gput:Nen \g_questionbank_questions_prop {\l_questionbank_key_tl/solution} {#4}
+        \begin{SaveRefQ}[
+    		num=\arabic{bigtot},
+    		keys=
+    	]
+        \l_questionbank_key_tl \ \ \ \\ \\
+        \end{SaveRefQ}
+        \addtocounter{bigtot}{1}
+}{}
+
+\def\forlistlooptwo#1#2#3{%
+    \ifboolexpr{test{\IfSubStr{#2}{,}} and test{\IfSubStr{#3}{,}}}{%
+        % Evaluate first pair and call back with reduced lists if there are at least two elements in each list..
+        \forlistlooptwohelper{#1}#2;#3;%
+    }{%
+        \ifboolexpr{test{\notblank{#2}} and test{\notblank{#3}}}{%
+            % Evaluate last pair, if there is one element in each list.
+            #1{#2}{#3}%
+        }{}%
+    }%
+}
+\def\forlistlooptwohelper#1#2,#3;#4,#5;{%
+    % Call the handler with the first pair as the two arguments.
+    #1{#2}{#4}%
+    % Call the loop macro again with the lists reduced by the first pair.
+    \forlistlooptwo{#1}{#3}{#5}%
+}
+
+\newcounter{totitem}
+\newcounter{ssssplit}
+\DeclareDocumentEnvironment{BuildRubric}{m m m}{
+\setcounter{lsnum}{1}
+\begin{rubbox}
+    \def\createVariableFromPair##1##2{
+    \StrCount{##2}{*}[\@nrubric]
+    \IfStrEq{#3}{sbg}{To \ Earn \ LS $^\fnsymbol{lsnum}$\showto{DEV}{\ - \ {##1}}}{}
+    \begin{itemize}
+    \forloop{ssssplit}{0}{\value{ssssplit} < \@nrubric}{
+    \ifnum 0 = \value{ssssplit}
+        \StrBefore{##2}{*}[\@rubricitem]
+        \item  \@rubricitem
+    \else 
+        \StrBetween[\arabic{ssssplit},\the\numexpr\value{ssssplit}+1\relax]{##2}{*}{*}[\@rubricitem]
+        \item  \@rubricitem
+    \fi
+    }
+    \end{itemize}
+    \addtocounter{lsnum}{1}
+    }
+    \forlistlooptwo{\createVariableFromPair}{#1}{#2}
+\end{rubbox}
+}{}
+
+%\newcounter{totmark}
+%\DeclareDocumentEnvironment{BuildRubric}{m m}{
+%    \subsection*{Rubric}
+%    \setcounter{totmark}{0}
+%    \begin{itemize}
+%    \def\createVariableFromPair##1##2{
+%    \item   ##1. \ \ \ \ (Worth \ ##2 \ Mark) \addtocounter{totmark}{##2}
+%    }
+%    \forlistlooptwo{\createVariableFromPair}{#1}{#2}
+%    \end{itemize}
+%    There \ are \ a \ total \ of \ \arabic{totmark} \ marks.
+%}{}
+
+
+\NewDocumentCommand{\PullQ}{m}{
+    \prop_get:NeN \g_questionbank_questions_prop {#1/key} \l_questionbank_key_tl
+    \prop_get:NeN \g_questionbank_questions_prop {#1/prompt} \l_questionbank_prompt_tl
+    \prop_get:NeN \g_questionbank_questions_prop {#1/type} \l_questionbank_type_tl
+    \prop_get:NeN \g_questionbank_questions_prop {#1/standards} \l_questionbank_standards_tl
+    \prop_get:NeN \g_questionbank_questions_prop {#1/rubric} \l_questionbank_rubric_tl
+    \prop_get:NeN \g_questionbank_questions_prop {#1/solution} \l_questionbank_solution_tl
+    \begin{qbox}{\begin{\l_questionbank_type_tl} \showto{DEV}{\l_questionbank_key_tl} \end{\l_questionbank_type_tl}
+    }
+    \l_questionbank_prompt_tl
+    \end{qbox}
+    \begin{lsbox}
+    \l_questionbank_standards_tl
+    \end{lsbox}
+    \begin{shownto}{SOL,GRAD}
+    \begin{solbox}
+    \l_questionbank_solution_tl
+    \end{solbox}
+    \end{shownto}
+    \begin{showto}{GRAD}
+    \l_questionbank_rubric_tl
+    \end{showto}
+}
+{}
+
+\NewDocumentCommand{\PullQRef}{}{
+\begin{shownto}{DEV}
+\newcounter{ssplit}
+\forloop{ssplit}{0}{\value{ssplit} < \value{bigtot}}{
+    \prop_get:NeN \g_question_ref_prop {\arabic{ssplit}/body} \l_question_ref_keys_tl
+    \noindent
+    \l_question_ref_keys_tl
+}
+\end{shownto}
+}
+{}
+
+
+\NewDocumentCommand{\SortQ}{m m m m}{
+\newcounter{sssplit}
+\newcounter{chapcheck}
+\newcounter{gencheck}
+\newcounter{typecheck}
+\noindent
+\textbf{Here \ are \IfEq{#3}{}{}{\ {#3}} \ questions \IfEq{#1}{}{}{\ from \ Chapter \ {#1}} \IfEq{#2}{}{}{\ which \ focus \ on \ {#2}}.}
+\newline
+\newline
+\forloop{sssplit}{0}{\value{sssplit} < \value{bigtot}}{
+    \setcounter{chapcheck}{1}
+    \setcounter{gencheck}{1}
+    \setcounter{typecheck}{1}
+    \prop_get:NeN \g_question_ref_prop {\arabic{sssplit}/body} \l_question_ref_keys_tl
+    \IfEq{#1}{}{}{
+    \StrBetween{\l_question_ref_keys_tl}{h}{-}[\@chapternumber]
+    \IfStrEq{\@chapternumber}{#1}%
+    {}{\setcounter{chapcheck}{0}}
+}
+    \IfEq{#2}{}{}{
+    \StrBetween[1,2]{\l_question_ref_keys_tl}{-}{-}[\@generalcat]
+    \IfStrEq{\@generalcat}{#2}%
+    {}{\setcounter{gencheck}{0}}
+}
+    \IfEq{#3}{}{}{
+    \StrBehind[3]{\l_question_ref_keys_tl}{-}[\@questiontype]
+    \StrLeft{\@questiontype}{3}[\@questiontype]
+    \IfStrEq{\@questiontype}{#3}%
+    {}{\setcounter{gencheck}{0}}
+}
+\ifnum 1 = \the\numexpr\value{chapcheck}*\value{gencheck}*\value{typecheck}\relax
+    \l_question_ref_keys_tl
+        \else 
+    \fi
+}}
+{}
+
+\ExplSyntaxOff

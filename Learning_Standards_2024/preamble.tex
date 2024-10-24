@@ -1,0 +1,102 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                      %
+%                       MAT188/187 PREAMBLE FILE                       %
+%                                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%DOCUMENT CLASS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\documentclass[12pt,oneside,english]{amsart}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%PACKAGES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=1.5cm,lmargin=1.4cm,rmargin=1.4cm}
+\usepackage{amsthm}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{hyperref}
+\usepackage{multiaudience}
+\usepackage{etoolbox}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage[most]{tcolorbox}
+\usepackage{Learning_Standards_Revised_Summer_2023/mathbib}
+\usepackage{Learning_Standards_Revised_Summer_2023/learningstandards2023}
+\usepackage{Learning_Standards_Revised_Summer_2023/questionbank}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%COLOURS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{188teal}{cmyk}{0.44,0,0.11,0.22}
+\definecolor{188purple}{cmyk}{0.3,1,0,0.1}
+\definecolor{188gray}{cmyk}{0.2,0,0,0.6}
+\definecolor{188yellow}{cmyk}{0,0,1,0.5}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%SHORTCUTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\rref}{\operatorname{ref}}
+\newcommand{\Rref}{\operatorname{rref}}
+\newcommand{\rank}{\operatorname{Rank}}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\mat}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\lv}{\langle}
+\newcommand{\leobj}{\noindent{\color{teal} \textbf{Learning Standards}}}
+\newcommand{\vocab}{\noindent{\color{purple} \textbf{Vocabulary}}}
+\newcommand{\Rv}{\mathbb{R}angle}
+\newcommand{\bbR}{\mathbb{R}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\bbN}{\mathbb{N}}
+\newcommand{\bbQ}{\mathbb{Q}}
+\newcommand{\bbZ}{\mathbb{Z}}
+\newcommand{\bbC}{\mathbb{C}}
+\newcommand{\im}{\operatorname{im}}
+\newcommand{\col}{\operatorname{Col}}
+% \newcommand{\null}{\operatorname{Null}}
+\newcommand{\spn}{\operatorname{span}}
+\newcommand{\proj}{\operatorname{Proj}}
+\newcommand{\tr}{\operatorname{tr}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{amatrix}[1]{%
+	\left[\begin{array}{@{}*{#1}{c}|c@{}}
+	}{%
+	\end{array} \right]
+}
+
+
+\newenvironment{imatrix}[2]{%
+	\left[\begin{array}{@{}*{#1}{c}|*{#2}{c}@{}}
+	}{%
+	\end{array} \right]
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%IMPORTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{Learning_Standards_Revised_Summer_2023/concepts}
+\input{Learning_Standards_Revised_Summer_2023/standards}
+\input{Learning_Standards_Revised_Summer_2023/questions}

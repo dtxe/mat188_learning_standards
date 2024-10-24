@@ -1,0 +1,243 @@
+\documentclass[12pt,oneside,english]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=1.5cm,lmargin=1.4cm,rmargin=1.4cm}
+\usepackage{amsthm}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{graphics,hyperref}
+\usepackage{multiaudience}
+\usepackage{etoolbox}
+\usepackage{Learning_Standards_Revised_Summer_2023/mathbib}
+
+% define required counters. Only the section counter should be touched
+\setcounter{section}{6
+ }
+\newcounter{nstandards}
+\setcounter{nstandards}{2}
+\newcounter{listcount}
+
+\makeatletter
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\newtheorem*{vocab}{\color{purple} Vocabulary}
+\newtheorem*{fact}{\color{green} Fact}
+\newtheorem*{warn}{\color{red} Warning}
+\newtheorem{task}{Task}
+\newtheorem{exercise}{Exercise}
+\newtheorem{question}{Question}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{\color{blue} Definition}
+
+
+\makeatother
+\newtheorem{problem}{Problem}
+
+
+%%%%%%%%%% Handy commands:
+
+% Solution environment
+\newenvironment{solution}{\begin{framed}\noindent\textbf{Solution.}}{\end{framed}}
+
+% abbreviations
+\newcommand{\Rref}{\operatorname{rref}}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\mat}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+\newcommand{\lv}{\langle}
+\newcommand{\leobj}{\noindent{\color{teal} \textbf{Learning Standards}}}
+\newcommand{\Rv}{\mathbb{R}angle}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\im}{\operatorname{im}}
+\newcommand{\spn}{\operatorname{span}}
+% augmented matrix macro (enter number of rows before bar)
+\newenvironment{amatrix}[1]{%
+	\left[\begin{array}{@{}*{#1}{c}|c@{}}
+	}{%
+	\end{array} \right]
+}
+
+% augmented matrix macro (enter number of rows before bar
+% and after)
+\newenvironment{imatrix}[2]{%
+	\left[\begin{array}{@{}*{#1}{c}|*{#2}{c}@{}}
+	}{%
+	\end{array} \right]
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%AUDIENCE SETUP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% learning standard categories audience 
+\SetNewAudience{WRIT}
+\SetNewAudience{COM}
+\SetNewAudience{CON}
+\SetNewAudience{VG}
+\SetNewAudience{DEF}
+
+% set the current audiences
+\DefCurrentAudience{WRIT,COM,CON,VG,DEF}
+
+% audience specific environments
+\DeclareDocumentEnvironment{WRIT}{m o}{
+    #1 
+    \IfNoValueTF{#2}
+    {
+    \hypertarget{\arabic{nstandards}}{(\textit{Writing})}
+    }
+    {
+    \hypertarget{\arabic{nstandards}}{\textbf{(\textit{Writing})}}
+    }
+}{}
+
+\DeclareDocumentEnvironment{COM}{m o}{
+    #1 
+    \IfNoValueTF{#2}
+    {
+    \hypertarget{\arabic{nstandards}}{(\textit{Computation})}
+    }
+    {
+    \hypertarget{\arabic{nstandards}}{\textbf{(\textit{Computation})}}
+    }
+}{}
+
+\DeclareDocumentEnvironment{CON}{m o}{
+    #1 
+    \IfNoValueTF{#2}
+    {
+    \hypertarget{\arabic{nstandards}}{(\textit{Conceptual})}
+     }
+    {
+    \hypertarget{\arabic{nstandards}}{\textbf{(\textit{Conceptual})}}
+    }
+}{}
+
+\DeclareDocumentEnvironment{VG}{m o}{
+    #1 
+    \IfNoValueTF{#2}
+    {
+    \hypertarget{\arabic{nstandards}}{(\textit{Visual/Geometry})}
+     }
+    {
+    \hypertarget{\arabic{nstandards}}{\textbf{(\textit{Visual/Geometry})}}
+    }
+}{}
+
+% categorize command which uses the audience environments above
+% disregard error prompt on \item lines
+\NewDocumentCommand{\categorize}{s m m}{
+    \IfBooleanT{#1}{
+    \begin{shownto}{#2}
+    \item \begin{#2}{#3}[x] \end{#2}
+    \end{shownto}
+    }
+    \IfBooleanF{#1}{
+    \begin{shownto}{#2}
+    \item \begin{#2}{#3} \end{#2}
+    \end{shownto}
+    }
+    \addtocounter{nstandards}{1}
+}
+
+
+%create a hyperlink when stating standards
+\NewDocumentCommand{\LSLabel}{m}{
+    \ifnum #1<\the\numexpr\value{nstandards}-1\relax
+        \ifnum \value{listcount}=1
+            \hyperlink{#1}{(#1).}
+        \else 
+            \hyperlink{#1}{(#1),}
+    \fi
+    \fi
+    \addtocounter{listcount}{-1}
+}
+
+%delineates learning standards specified in the argument
+\NewDocumentCommand{\LSCite}{m}{
+    \setcounter{listcount}{0}% Restart list count
+    \renewcommand*{\do}[1]{\stepcounter{listcount}}% Count list item
+    \docsvlist{#1}
+    \renewcommand*{\do}[1]{\LSLabel{##1}}
+    \docsvlist{#1}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%AUDIENCE COPY PASTE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% WRIT,COM,CON,VG,DEF
+% WRIT,COM,CON,VG
+% DEF
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% show solutions?
+\newif\ifshowSoln
+%\showSolntrue
+\showSolnfalse
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%INPUT CONCEPTS (e.g., definitions, theorems, lemmas)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{Learning_Standards_Revised_Summer_2023/concepts.tex}
+
+
+%Document Start
+\begin{document}
+
+	
+\title{
+	\textbf{	 \\ MAT188 Learning Standards-Chapter 6
+        }  
+	\ifshowSoln
+	and notes for instructors
+	\else
+{}
+	\fi
+}
+
+\kern -4em
+\rightline {\emph{\tiny (c)2023 C. Karimianpour}}	
+
+\maketitle
+
+\section*{\color{blue} Key Notions: %FILL
+    }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%GOAL TEMPLATE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   \categorize{WRIT}{}
+%   \categorize{COM}{}
+%   \categorize{CON}{}
+%   \categorize{VG}{}
+
+\subsection*{Learning Goals}\hypertarget{1}{}%hypertarget for learning standard referencing
+    \begin{enumerate}
+       \categorize{VG}{I can visualize the absolute value of the determinant of a $2 \times 2$ and a $3 \times 3$ matrix as a factor by which the corresponding linear transformation changes the area of the unit square or the volume of the unit cube, respectively.}
+        \categorize{VG}{I can interpret the sign of the determinant of a matrix geometrically.}
+        \categorize{COM}{I can compute the determinant of an arbitrary square matrix.}
+        \categorize{COM}{Given a square matrix $A$, I can compute the determinant of $A^{-1}$ without computing $A^{-1}$.}
+        \categorize{COM}{Given square matrices $A$ and $B$, I can compute the determinant of $AB$ without computing $AB$.}
+        \categorize{CON}{I can use the determinant to determine whether a given linear transformation is invertible.}
+        \categorize{COM}{Given a $2 \times 2$ matrix $A$, I can compute the inverse of $A$ using the matrix inverse formula.}
+        \categorize{CON}{I can use row reduction to compute the determinant of a matrix}
+\end{enumerate}
+
+%%%%%Definitions Page
+
+\begin{shownto}{DEF}
+\PrintSavedRender{}
+\end{shownto}
+
+\end{document}
