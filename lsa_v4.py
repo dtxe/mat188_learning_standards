@@ -8,16 +8,19 @@ import pandas as pd
 import numpy as np
 import glob
 from itertools import compress
-import wwparse
+import wwparse_v2
 from tqdm import tqdm
 import re
 import argparse
 import multiprocessing as mp
 import psutil
 import functools
+from types import SimpleNamespace
 import os, os.path
+import yaml
 
 nthreads = psutil.cpu_count(logical=False) - 1
+
 
 def extract_tutorial_number(x: str):
     rel = re.search(r'TUT(\d{4})', x)
@@ -28,8 +31,8 @@ def extract_tutorial_number(x: str):
         return int(rel.group(1))
 
 
-def grade_by_ls(args, lsref):
-    this_student, this_student_scores = args
+def grade_by_ls(student:tuple, lsref):
+    this_student, this_student_scores = student
 
     this_standards_achieved = pd.Series(index=pd.MultiIndex.from_frame(
         lsref[['modality', 'standard']].drop_duplicates()),
@@ -71,149 +74,76 @@ def grade_by_ls(args, lsref):
     return this_standards_achieved
 
 
-def load_data(args: argparse.Namespace):
+def load_data(config: SimpleNamespace):
     #######################################################################
     ## Data loading
 
     # import table of learning standards
-    lsref = pd.read_excel('../Data/standards_lookup_table.xlsx',
+    lsref = pd.read_excel(config.input_paths.standards_lookup_table,
                           sheet_name='grading')
     lsref = lsref.set_index('standard').stack().reset_index()
     lsref.columns = ['standard', 'modality', 'reqs']
 
     # ignore exams
-    if not args.compute_exams:
+    if not config.compute_exams:
         lsref = lsref[lsref['modality'] != 'exam']
 
-    # load tutorial SBG assignments
-    tut_day_tbl = pd.read_excel('../Data/standards_lookup_table.xlsx',
-                                sheet_name='tut_dates',
-                                index_col='tutorial')
-    tut_sbg_assigned = pd.read_excel('../Data/standards_lookup_table.xlsx',
-                                     sheet_name='sbg_assigned',
-                                     index_col=0)
-
     # load roster
-    roster = pd.read_csv('../Data/mat188-2023f-roster.csv')
-    gradebook = pd.read_csv(r"../Data/mat188-2023f-gradebook.csv")
+    roster = pd.read_csv(config.input_paths.utatg_roster)
+    gradebook = pd.read_csv(config.input_paths.quercus_gradebook)
     gradebook = gradebook[~gradebook['SIS User ID'].isna()]
     gradebook = gradebook[['SIS User ID',
                            'Section']].set_index(['SIS User ID'])
     gradebook['tut'] = gradebook['Section'].apply(extract_tutorial_number)
-    gradebook['tut_day'] = gradebook['tut'].apply(
-        lambda x: tut_day_tbl.loc[x, 'day'])
+    # gradebook['tut_day'] = gradebook['tut'].apply(
+    #     lambda x: tut_day_tbl.loc[x, 'day'])
 
     roster = roster[roster['UTORid'].isin(
         gradebook.index)]  # drop students who dropped the course
 
-    if args.debug:
+    if config.debug:
         roster = pd.concat(
             (roster[:20], roster[-20:]
              ))  # DEBUGGING: only keep first and last 20 students for speed
 
-    scores = None
+    scores = []
 
     ##### WEBWORK #####
-    for filename in glob.glob('../Data/*.html'):
+    for filename in glob.glob(config.input_paths.webwork_glob):
         print(f'Loading {filename}...')
-        this_score = wwparse.parse_html(filename, save_csv=False)
+        this_score = wwparse_v2.parse_csv(filename)
 
         # a question is correct if all parts are correct
-        this_score['correct'] = this_score['score'] == 100
+        this_score['correct'] = this_score['score'] == 1
 
-        scores = pd.concat([scores, this_score], ignore_index=True)
+        scores.append(this_score)
 
     ##### TUTORIALS #####
-    # get a list of all questions from tutorials
-    # - use this to compute which questions are graded by
-    all_tut_qs = lsref.loc[lsref['modality'] == 'tutorial', 'reqs'].unique()
-    all_tut_qs = [x.split(',') for x in all_tut_qs]
-    all_tut_qs = sum(all_tut_qs, [])
-    all_tut_qs = [x.split('|')[1] if '|' in x else x for x in all_tut_qs]
-    all_tut_qs = [x.strip() for x in all_tut_qs]
-    all_tut_qs = list(set(all_tut_qs))
-
-    all_tut_qs_sbg = [
-        int(re.search(r'tut\d+\-(\d+)\-\w+', x).group(1)) for x in all_tut_qs
-    ]
-    all_tut_qs_wk = [
-        int(re.search(r'tut(\d+)\-\d+\-\w+', x).group(1)) for x in all_tut_qs
-    ]
-
-    def compute_tut_is_graded(utorid: str):
-        ''' For a given tutorial day, compute which questions are graded for a given student '''
-        tut_day = gradebook.loc[utorid, 'tut_day']
-
-        stu_scores = pd.DataFrame(
-            data={
-                'login_name': [utorid] * len(all_tut_qs),
-                'score_key':
-                all_tut_qs,
-                'is_graded': [(wk in tut_sbg_assigned.columns) and (
-                    tut_sbg_assigned.loc[tut_day, wk] == sbg) for q, sbg, wk in
-                              zip(all_tut_qs, all_tut_qs_sbg, all_tut_qs_wk)],
-            })
-
-        return stu_scores
-
-    tut_is_graded = list(map(compute_tut_is_graded, tqdm(roster['UTORid'].unique(), desc='SBGs graded by student')))
-    tut_is_graded = pd.concat(tut_is_graded, ignore_index=True)
-
-    # load tutorial data
-    tut_scores = None
-    for filename in glob.glob('../Data/Tutorials-Processed/*TUT*/*_SBG.xlsx'):
+    for filename in glob.glob(config.input_paths.tutorial_glob):
         print(f'Loading {filename}...')
-        this_score = pd.read_excel(filename)
-
-        # remove sum rows at the bottom
-        this_score = this_score[~(this_score['First Name'].isna() & this_score['Last Name'].isna())]
+        this_score = pd.read_csv(filename)
 
         # merge with roster
-        this_score = this_score.merge(roster[['Email', 'UTORid']],
-                                      how='left',
-                                      on='Email')
+        this_score = this_score.merge(roster[['Email', 'UTORid']], how='left', on='Email')
         this_score = this_score.rename(columns={'UTORid': 'login_name'})
 
-        # remove empty login names
-        this_score = this_score[~this_score['login_name'].isna()
-                                & (this_score['login_name'] != '')]
+        # parse score key
+        ls_cols = [x for x in this_score.columns if re.match(r'^tut\d{1,2}\-\d\-\d{1,2}$', x)]
+        this_score = this_score[['login_name', 'SBG'] + ls_cols]
 
-        ls_cols = [x for x in this_score.columns if '|' in x]
-        this_score = this_score[ls_cols + ['login_name']]
+        this_score = this_score.melt(id_vars=['login_name', 'SBG'], var_name='score_key', value_name='correct')
+        this_score['score_key_sbg'] = this_score['score_key'].apply(lambda x: re.match(r'^tut\d{1,2}\-(\d)\-\d{1,2}$', x).group(1))
 
-        for ccol in ls_cols:
-            ckey = ccol.split('|')[1].strip()
-            this_score = this_score.rename(columns={ccol: ckey})
+        # only keep the graded sbg
+        this_score['is_graded'] = this_score['SBG'].astype(int) == this_score['score_key_sbg'].astype(int)
+        this_score = this_score[['login_name', 'score_key', 'correct', 'is_graded']]
 
-        # stack into long format
-        this_score = this_score.melt(id_vars='login_name',
-                                     var_name='score_key',
-                                     value_name='correct')
+        scores.append(this_score)
 
-        # check if this LS was tested for this student for this tutorial by matching it to the SBG column
-        this_score['ls'] = this_score['score_key'].apply(
-            lambda x: re.search(r'.*\d+\-(\d+)\-\w+', x).group(1)).astype(int)
-        this_score.drop(columns=['ls'], inplace=True)
-
-        # concat
-        tut_scores = pd.concat([tut_scores, this_score], ignore_index=True)
-
-    # merge with list of required questions for each student
-    tut_scores = tut_scores.groupby(['login_name',
-                                     'score_key']).max().reset_index()
-    tut_scores = tut_scores.set_index(['login_name', 'score_key'])['correct']
-    tut_is_graded['correct'] = tut_is_graded.apply(
-        lambda x: tut_scores.loc[(x['login_name'], x['score_key'])]
-        if (x['login_name'], x['score_key']) in tut_scores.index else False,
-        axis=1)
-    tut_is_graded['correct'] = tut_is_graded['correct'].fillna(False)
-    # tut_is_graded['correct'][~tut_is_graded['is_graded']] = np.nan
-
-    scores = pd.concat([scores, tut_is_graded], ignore_index=True)
 
     # load midterm data
-    if args.compute_exams:
-        for filename in glob.glob('../Data/*Midterm*/*.csv'):
+    if config.compute_exams:
+        for filename in glob.glob(config.input_paths.midterm_glob):
             print(f'Loading {filename}...')
             this_score = pd.read_csv(filename)
 
@@ -245,23 +175,26 @@ def load_data(args: argparse.Namespace):
                 False: 0
             })
 
-            # concat
-            scores = pd.concat([scores, this_score], ignore_index=True)
+            scores.append(this_score)
 
     # load manually scored items
-    manual_scores = pd.read_excel('../Data/mat188-2023f-manualscores.xlsx')
-    scores = pd.concat((scores, manual_scores), ignore_index=True)
+    manual_scores = pd.read_excel(config.input_paths.manual_scores)
+    scores.append(manual_scores)
+
+    # concatenate all scores
+    scores = pd.concat(scores, ignore_index=True)
 
     # remove score rows without an associated utorid
     scores = scores[scores['login_name'] != ''].dropna(subset=['login_name'])
 
     # save for debugging
-    scores.to_csv('../Output/debug_raw_scores.csv')
+    scores.to_csv(config.output_dir + '/debug_raw_scores.csv')
 
     return scores, roster, lsref
 
-def run(args: argparse.Namespace):
-    scores, roster, lsref = load_data(args)
+
+def run(config: SimpleNamespace):
+    scores, roster, lsref = load_data(config)
 
     #######################################################################
     # Which learning standards has each student achieved?
@@ -303,20 +236,26 @@ def run(args: argparse.Namespace):
                                       ]].drop_duplicates()))
 
     # with multiple threads, call the grading function for each student
-    with mp.Pool(nthreads) as p:
-        standards_achieved = pd.concat(tqdm(
-            p.imap_unordered(
-                functools.partial(grade_by_ls, lsref=lsref),
-                zip(roster['UTORid'].unique(), [
-                    scores[scores['login_name'] == this_student].set_index(
-                        'score_key')
-                    for this_student in roster['UTORid'].unique()
-                ]),
-                chunksize=10,
-            ),
-            total=len(roster['UTORid'].unique()),
-            desc='Evaluating learning standards by student'),
-                                       axis=1).T
+    # with mp.Pool(nthreads) as p:
+    #     standards_achieved = pd.concat(tqdm(
+    #         p.imap_unordered(
+    #             functools.partial(grade_by_ls, lsref=lsref),
+    #             zip(roster['UTORid'].unique(), [
+    #                 scores[scores['login_name'] == this_student].set_index(
+    #                     'score_key')
+    #                 for this_student in roster['UTORid'].unique()
+    #             ]),
+    #             chunksize=10,
+    #         ),
+    #         total=len(roster['UTORid'].unique()),
+    #         desc='Evaluating learning standards by student'),
+    #                                    axis=1).T
+    standards_achieved = []
+    for this_student in tqdm(roster['UTORid'].unique(), desc='Evaluating learning standards by student'):
+        this_student_scores = scores[scores['login_name'] == this_student].set_index('score_key')
+        standards_achieved.append(grade_by_ls((this_student, this_student_scores), lsref))
+
+    standards_achieved = pd.concat(standards_achieved, axis=1).T
 
     # compute fraction standards achieved across each modality
     modalities = lsref['modality'].unique()
@@ -339,23 +278,37 @@ def run(args: argparse.Namespace):
                                                    'Last Name']
     standards_achieved.sort_index(axis=0, inplace=True)
 
-    standards_achieved.to_csv('../Output/standards_achieved.csv')
+    standards_achieved.to_csv(config.output_dir + '/standards_achieved.csv')
 
+
+def to_namespace(d: dict):
+    for k, v in d.items():
+        if isinstance(v, dict):
+            d[k] = to_namespace(v)
+    return SimpleNamespace(**d)
 
 
 #######################################################################
 # Parse arguments
 if __name__ == '__main__':
+    import sys
+
     parser = argparse.ArgumentParser()
+    parser.add_argument('config', type=str)
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--compute-exams', action='store_true')
     parser.add_argument('--generate-reports', action='store_true')
-    args = parser.parse_args()
+    args = parser.parse_args() if 'ipykernel' not in sys.modules else parser.parse_args(
+        ['--debug', 'config2024.yml'])
 
-    if not os.path.exists('../Output'):
-        os.makedirs('../Output')
+    with open(args.config, 'r') as f:
+        config = yaml.safe_load(f)
+    config = to_namespace(config | args.__dict__)
 
-    run(args)
+    if not os.path.exists(config.output_dir):
+        os.makedirs(config.output_dir)
+
+    run(config)
 
     if args.generate_reports:
         import make_ls_report_v2
