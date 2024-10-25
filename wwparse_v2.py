@@ -42,6 +42,9 @@ def parse_csv(filename: str):
     long_df['score_key'] = long_df['problem_num'].astype(int).apply(
         lambda x: f'{set_name}-{x:d}')
 
+    # normalize login name
+    long_df['login_name'] = long_df['login_name'].str.strip()
+
     long_df = long_df.sort_values(by=['login_name', 'score_key']).reset_index(
         drop=True)
 

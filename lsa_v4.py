@@ -31,7 +31,7 @@ def extract_tutorial_number(x: str):
         return int(rel.group(1))
 
 
-def grade_by_ls(student:tuple, lsref):
+def grade_by_ls(student: tuple, lsref):
     this_student, this_student_scores = student
 
     this_standards_achieved = pd.Series(index=pd.MultiIndex.from_frame(
@@ -80,7 +80,9 @@ def load_data(config: SimpleNamespace):
 
     # import table of learning standards
     lsref = pd.read_excel(config.input_paths.standards_lookup_table,
-                          sheet_name='grading')
+                            sheet_name='grading',
+                            engine='openpyxl')
+
     lsref = lsref.set_index('standard').stack().reset_index()
     lsref.columns = ['standard', 'modality', 'reqs']
 
@@ -124,22 +126,32 @@ def load_data(config: SimpleNamespace):
         this_score = pd.read_csv(filename)
 
         # merge with roster
-        this_score = this_score.merge(roster[['Email', 'UTORid']], how='left', on='Email')
+        this_score = this_score.merge(roster[['Email', 'UTORid']],
+                                      how='left',
+                                      on='Email')
         this_score = this_score.rename(columns={'UTORid': 'login_name'})
 
         # parse score key
-        ls_cols = [x for x in this_score.columns if re.match(r'^tut\d{1,2}\-\d\-\d{1,2}$', x)]
+        ls_cols = [
+            x for x in this_score.columns
+            if re.match(r'^tut\d{1,2}\-\d\-\d{1,2}$', x)
+        ]
         this_score = this_score[['login_name', 'SBG'] + ls_cols]
 
-        this_score = this_score.melt(id_vars=['login_name', 'SBG'], var_name='score_key', value_name='correct')
-        this_score['score_key_sbg'] = this_score['score_key'].apply(lambda x: re.match(r'^tut\d{1,2}\-(\d)\-\d{1,2}$', x).group(1))
+        this_score = this_score.melt(id_vars=['login_name', 'SBG'],
+                                     var_name='score_key',
+                                     value_name='correct')
+        this_score['score_key_sbg'] = this_score['score_key'].apply(
+            lambda x: re.match(r'^tut\d{1,2}\-(\d)\-\d{1,2}$', x).group(1))
 
         # only keep the graded sbg
-        this_score['is_graded'] = this_score['SBG'].astype(int) == this_score['score_key_sbg'].astype(int)
-        this_score = this_score[['login_name', 'score_key', 'correct', 'is_graded']]
+        this_score['is_graded'] = this_score['SBG'].astype(
+            int) == this_score['score_key_sbg'].astype(int)
+        this_score = this_score[[
+            'login_name', 'score_key', 'correct', 'is_graded'
+        ]]
 
         scores.append(this_score)
-
 
     # load midterm data
     if config.compute_exams:
@@ -230,10 +242,10 @@ def run(config: SimpleNamespace):
     lsref = lsref[~lsref['reqs'].isna()]
 
     # initialize output table
-    standards_achieved = pd.DataFrame(index=scores['login_name'].unique(),
-                                      columns=pd.MultiIndex.from_frame(lsref[[
-                                          'modality', 'standard'
-                                      ]].drop_duplicates()))
+    # standards_achieved = pd.DataFrame(index=scores['login_name'].unique(),
+    #                                   columns=pd.MultiIndex.from_frame(lsref[[
+    #                                       'modality', 'standard'
+    #                                   ]].drop_duplicates()))
 
     # with multiple threads, call the grading function for each student
     # with mp.Pool(nthreads) as p:
@@ -251,9 +263,12 @@ def run(config: SimpleNamespace):
     #         desc='Evaluating learning standards by student'),
     #                                    axis=1).T
     standards_achieved = []
-    for this_student in tqdm(roster['UTORid'].unique(), desc='Evaluating learning standards by student'):
-        this_student_scores = scores[scores['login_name'] == this_student].set_index('score_key')
-        standards_achieved.append(grade_by_ls((this_student, this_student_scores), lsref))
+    for this_student in tqdm(roster['UTORid'].unique(),
+                             desc='Evaluating learning standards by student'):
+        this_student_scores = scores[scores['login_name'] ==
+                                     this_student].set_index('score_key')
+        standards_achieved.append(
+            grade_by_ls((this_student, this_student_scores), lsref))
 
     standards_achieved = pd.concat(standards_achieved, axis=1).T
 
@@ -288,6 +303,7 @@ def to_namespace(d: dict):
     return SimpleNamespace(**d)
 
 
+#%% Main
 #######################################################################
 # Parse arguments
 if __name__ == '__main__':
@@ -298,7 +314,8 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--compute-exams', action='store_true')
     parser.add_argument('--generate-reports', action='store_true')
-    args = parser.parse_args() if 'ipykernel' not in sys.modules else parser.parse_args(
+    args = parser.parse_args(
+    ) if 'ipykernel' not in sys.modules else parser.parse_args(
         ['--debug', 'config2024.yml'])
 
     with open(args.config, 'r') as f:
