@@ -12,7 +12,9 @@ from types import SimpleNamespace
 from tqdm import tqdm
 
 
-def build_tex(row: pd.Series, filename: Optional[str] = None):
+def build_tex(config: SimpleNamespace,
+              row: pd.Series,
+              filename: Optional[str] = None):
     filename = filename or row.name
 
     # row.dropna(inplace=True)
@@ -58,7 +60,8 @@ def build_tex(row: pd.Series, filename: Optional[str] = None):
 
 
 def run(config: SimpleNamespace):
-    student_progress = pd.read_csv(config.output_dir + "/standards_achieved.csv",
+    student_progress = pd.read_csv(config.output_dir +
+                                   "/standards_achieved.csv",
                                    header=[0, 1],
                                    index_col=0)
 
@@ -98,7 +101,7 @@ def run(config: SimpleNamespace):
                         total=len(student_progress)):
         filename = ri
 
-        build_tex(row, filename=filename)
+        build_tex(config, row, filename=filename)
 
     # end document
     with open(config.output_dir + "/ls_reports/tex/combined.tex", "a") as f:

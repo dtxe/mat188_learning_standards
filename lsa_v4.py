@@ -329,4 +329,4 @@ if __name__ == '__main__':
 
     if args.generate_reports:
         import make_ls_report_v2
-        make_ls_report_v2.run(args)
+        make_ls_report_v2.run(config)

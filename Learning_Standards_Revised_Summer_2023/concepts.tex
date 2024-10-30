@@ -1,0 +1,834 @@
+%%
+%% Start Definitions (each of these we can reuse)
+%%
+
+%\begin{SaveConcept}[
+	%	key=,
+	%	title={}
+	%]
+	%.
+%\end{SaveConcept}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 0
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{SaveConcept}{definition}[
+		key=set,
+		title={Set}
+	][0]
+	A \textbf{set} is a collection of objects, called elements of the set.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=subset,
+		title={Subset}
+	][0]
+	We say a set $A$  is a \textbf{subset} of a set $B$, and write $A\subseteq B$,  if all the elements of $A$ are also in $B$. In other words, $A\subseteq B$, if for every $a\in A$, $a\in B$. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=eqset,
+		title={Equality of Sets}
+	][0]
+	We say sets $A$ and $B$ are\textbf{ equal} if $A$ is a subset of $B$ and $B$ is a subset of $A$. That is $A=B$ if $A\subseteq B$ and $B\subseteq A$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=unionintersect,
+		title={Union and Intersection of Sets}
+	][0]
+	Let $X$ be a set and $A$ and $B$ be subsets of $X$. The union of $A$ and $B$ is a set that contains all elements of $A$ and $B$, that is
+        $$
+        A\cup B=\{x\in X\:|\: x\in A \text{ or } x\in B\}
+        $$
+        The intersection of $A$ and $B$ is the set of all common elements between $A$ and $B$ that is
+        $$
+        A\cap B=\{x\in X\:|\: x\in A \text{ and } x\in B\}.
+        $$
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=cvec,
+		title={Column Vector}
+	][0]
+	A real \textbf{column vector} is a $n\times 1$ matrix $\begin{bmatrix} v_1\\\vdots\\v_n \end{bmatrix}$, where $ v_i\in \bbR$, $1\leq i\leq n$.  
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=rvec,
+		title={Row Vector}
+	][0]
+	A real \textbf{row vector} is a $ 1\times n$ matrix $\begin{bmatrix} v_1&v_2&\cdots&v_n \end{bmatrix}$, where $ v_i\in \mathbb R$, $1\leq i\leq n$. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=ndimeuclidean,
+		title={Euclidean Real Vector Space}
+	][0]
+        The collection of all column vectors with $n$ components is denoted by $\bbR^n$; we will refer to $\bbR^n$ as the \textit{$n$-dimensional Euclidean vector space}. That is
+        $$
+        \bbR^n=\{\begin{bmatrix}
+	a_1\\a_2\\\vdots\\a_n
+        \end{bmatrix}\:|\: a_1,\cdots,a_n \text{ are in } \bbR\}
+        $$
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=stanvec,
+		title={Standard Vectors}
+	][0]
+        The standard vector $\vec{e}_i\in\mathbb{R}^m$ is defined by $\vec{e}_i=\begin{bmatrix} 0\\\vdots\\ 1\\ 0 \\ \vdots\\0 \end{bmatrix}$, a unit vector with zeros in all entries except for a 1 in the $i^{th}$ entry.
+\end{SaveConcept}
+
+
+
+\begin{SaveConcept}{definition}[
+		key=vecaddmult,
+		title={Vector addition and scalar multiplication}
+	][0]
+The sum of two vectors $\vec v$ and $\vec w$ in $\mathbb{R}^n$ is defined "componentwise". Given $\vec v, \vec w\in \bbR^n$
+$$
+\vec v+\vec w=\begin{bmatrix}
+	v_1\\v_2\\\vdots\\v_n
+\end{bmatrix}+\begin{bmatrix}
+w_1\\w_2\\\vdots\\w_n
+\end{bmatrix}=\begin{bmatrix}
+v_1+w_1\\v_2+w_2\\\vdots\\v_n+w_n
+\end{bmatrix}.
+$$
+The product of a scalar $k$ and a vector $\vec v$ is defined componentwise as well. Given a vector $\vec v\in \bbR^n$ and a scalar $k\in \bbR$ 
+$$
+k\vec v=k \begin{bmatrix}
+	v_1\\v_2\\\vdots\\v_n
+\end{bmatrix}=\begin{bmatrix}
+kv_1\\kv_2\\\vdots\\kv_n
+\end{bmatrix}.
+$$  
+\end{SaveConcept}
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{SaveConcept}{definition}[
+		key=dprod,
+		title={Dot Product}
+	][0]
+        Let $\vec v$ and $\vec w$ be (row or column) vectors with components $v_1,v_2,\cdots,v_n$ and $w_1,w_2,\cdots,w_n$ respectively. The \textbf{dot product} of $\vec v$ and $\vec w$ is a scalar denoted by $\vec v\cdot\vec w$ and is defined as
+	$$
+	\vec v\cdot\vec w=v_1w_1+v_2w_2+\cdots+v_nw_n.
+	$$
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=norm,
+		title={Norm}
+	][0]
+        Let $\vec v=\begin{bmatrix} v_1\\v_2\\\vdots\\v_n \end{bmatrix}$ be in $\bbR^n$. The \textbf{norm or magnitude or length} of $\vec v$ is denoted by $\|\vec v\|$ and is defined to be
+	$$
+	\sqrt{v_1^2+v_2^2+\cdots+v_n^2}.
+	$$
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=parallel,
+		title={Parallel Vectors}
+	][0]
+        We say two vectors $\vec v $ and $\vec w$ are \textbf{parallel} if one is a scalar multiple of the other. That is if $\vec v=k \vec w$ for some $k\in \bbR$ or $\vec w=k\vec v$ for some $k\in \bbR$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=perpendicular,
+		title={Perpendicular}
+	][0]
+        We say two vectors $\vec v $ and $\vec w$ are \textbf{perpendicular} or\textbf{ orthogonal }if $\vec v\cdot\vec w=0$. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=angle,
+		title={Angle}
+	][0]
+        Given vectors $\vec v$ and $\vec w$, the \textbf{angle} between $\vec v$ and $\vec w$ is defined to be
+  	$$
+        \arccos\left(\frac{\vec v\cdot\vec w}{\|\vec v\|\|\vec w\|}\right).
+  	$$
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=line,
+		title={Line}
+	][0]
+        A {\bf line} in  $\bbR^n$ is any set of the form
+        $$
+        L = \{ t \vec m + \vec b \,|\, t \in \bbR\},
+        $$
+        where $\vec b$ and nonzero $\vec m$  are fixed vectors in   $\bbR^n$.
+\end{SaveConcept}
+
+
+
+
+
+\begin{SaveConcept}{definition}[
+		key=plane,
+		title={Plane}
+	][0]
+        A {\bf plane} in  $\bbR^n$ is a set of the form
+        $$
+        P = \{ t \vec m + s \vec n + \vec b \,|\, s, t \in \bbR\},
+        $$
+        where nonzero $\vec m$, nonzero $\vec n$, and $\vec b$ are fixed vectors in   $\bbR^n$. Moreover, $\vec n$, and $\vec m$ are not parallel. 
+\end{SaveConcept}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{SaveConcept}{definition}[
+		key=lineq,
+		title={Linear Equation}
+	][1]
+        A \textbf{linear equation} with variables $x_1,\cdots, x_m$ is an equation of the form $a_{1}x_{1}+a_{2}x_{2}+\cdots+ a_{m}x_{m}=b$ where $a_1,\cdots, a_m$ and $b$ are scalars. \\A (particular) solution to the equation is a tuple $(c_1,\cdots,c_m)$ that makes the equation true. That is $a_{1}c_{1}+a_{2}c_{2}+\cdots+ a_{m}c_{m}=b$ 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=linsys,
+		title={System of Linear Equations}
+	][1]
+        A \textbf{system of linear equations} or \textbf{a linear system} with $m$ variables and $n$ equations is a collection of $n$ linear equations in $m$ variables and can be written in the form 
+	\begin{eqnarray*}\label{system}
+		a_{11}x_{1}+&a_{12}x_{2}+\cdots+ a_{1m}x_{m}&=b_1\\\nonumber
+		a_{21}x_{1}+&a_{22}x_{2}+\cdots +a_{2m}x_{m}&=b_2\\\nonumber
+		\vdots&\vdots&\vdots\\\nonumber
+		a_{n1}x_{1}+&a_{n2}x_{2}+\cdots +a_{nm}x_{m}&=b_n.
+	\end{eqnarray*}
+	Here $a_{ij}$'s and $d_i$'s are scalars and $x_i$'s are variables. 
+	A \textbf{ particular solution to a  system of linear equations} is a tuple $(c_1,\cdots,c_m)$ that makes all $n$ equations true simultaneously. That is 
+	\begin{eqnarray*}
+		a_{11}c_{1}+&a_{12}c_{2}+\cdots+ a_{1m}c_{m}&=b_1\\\nonumber
+		a_{21}c_{1}+&a_{22}c_{2}+\cdots +a_{2m}c_{m}&=b_2\\\nonumber
+		\vdots&\vdots&\vdots\\\nonumber
+		a_{n1}c_{1}+&a_{n2}c_{2}+\cdots +a_{nm}c_{m}&=b_n.\nonumber
+	\end{eqnarray*}
+	The set of all the possible solutions to a system of linear equations is called \textbf{the solution set} or the \textbf{general solution} of the system.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=pivot,
+		title={Pivot}
+	][1]
+        Let $A$  be a matrix in REF form. An entry of $A$ is called a \textbf{pivot entry} if it is the first non-zero entry of a row. A column of $A$ is called a \textbf{pivot column} if it contains a pivot entry.  If $A$ is also in RREF, pivot entries are called \textbf{leading ones}.
+\end{SaveConcept}
+
+\begin{SaveConcept}{definition}[
+		key=basefreevar,
+		title={Basic and Free Variables}
+	][1]
+	Given a system of linear equations with $m$ variables and $n$ equations, with coefficient matrix $A$ and augmented matrix $[A|\vec b]$
+	\begin{enumerate}
+		\item a variable is called a \textbf{free variable} if its corresponding column in $\mathrm{rref} A$ does not contain a pivot (or a leading one).
+		\item a variable is called a \textbf{leading variable or a basic variable or a dependent variable} if its corresponding column in $\mathrm{rref} A$ contains a pivot (or a leading one).
+	\end{enumerate}.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=idmat,
+		title={Identity Matrix}
+	][1]
+        The \textbf{identity matrix} $I_n$ is an $n\times n$ matrix whose diagonal entries are 1 and off-diagonal entries are $0$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=zmat,
+		title={Zero Matrix}
+	][1]
+        The \textbf{zero matrix} $0_{n\times m}$ is an $n\times m$ matrix with all zero entries.
+\end{SaveConcept}
+
+ 
+\begin{SaveConcept}{definition}[
+		key=rref,
+		title={REF and RREF}
+	][1]
+    A matrix is in \textbf{row echelon form} (REF) if it has the following properties
+	\begin{enumerate}
+		\item All zero rows are at the bottom.
+		\item The leading entry in each row is to the right of the leading entry of the row above.
+		\item All entries below a leading entry are zero.
+	\end{enumerate}
+	
+	A matrix is in \textbf{reduced row echelon form} (RREF) if it is in REF form and in addition
+	\begin{enumerate}
+		\item [(4)]  All the leading entries are $1$. In this case, we call them ``leading ones.''
+		\item [(5)] Each leading $1$ is the only nonzero entry in its entire column.  
+	\end{enumerate}
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=rank,
+		title={Rank}
+	][1]
+	The \textbf{rank} of a matrix $A$ is the number of leading ones in  $\mathrm{rref} (A)$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=matvec,
+		title={Matrix-Vector Product}
+	][1]
+        Let $A$ be an $n\times m$ matrix with row vectors $\vec w_1,\cdots,\vec w_n$ and $\vec x$ be a vector in $\bbR^m$. Define 
+	$$
+	A\vec x=\begin{bmatrix}
+		\_&\vec w_1&\_\\
+		\_&\vec w_2&\_\\
+		\_&\vdots&\_\\
+		\_&\vec w_n&\_
+	\end{bmatrix}\vec x=\begin{bmatrix}
+		\vec w_1\cdot \vec x\\\vec w_2\cdot \vec x\\\vdots\\\vec w_n\cdot\vec x
+	\end{bmatrix}.
+	$$
+	Note that $A\vec x$ is a column vector with $n$ components, that is, a vector in $\bbR^n$. The $i$-th component of $A\vec x$ is the dot product of the $i$-th row of $A$ and the vector $\vec x$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=lincom,
+		title={Linear Combination}
+	][1]
+        A {\bf linear combination} of the finitely many vectors $\vec v_1, \dots, \vec v_k$ in $\mathbb R^n$ is an expression of the form 
+	$$
+	c_1 \vec v_1 + \dots + c_k \vec v_k
+	$$
+	where each $c_i$ is a scalar. 
+\end{SaveConcept}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 2
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{SaveConcept}{definition}[
+		key=function,
+		title={Function}
+	][2]
+	A {\bf mapping} or {\bf function} or {\bf transformation} $f:X \longrightarrow Y$ or $X \overset{f}\rightarrow Y$ is a rule which assigns a unique element $f(x)\in Y$ to each element $x \in X$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=domcodom,
+		title={Domain and Codomain}
+	][2]
+	Given a {\bf mapping} or {\bf function} or {\bf transformation} $f:X \longrightarrow Y$,  We call $X$ the {\bf domain} or {\bf source}  of $f$, and call $Y$ the {\bf codomain} or {\bf target} of $f$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=image,
+		title={Image}
+	][2]
+	The {\bf image} of $f:X\to Y$ is defined to be the set $\im(f) = \{ f(x): x \in X\}=\{ y \in Y \, | \, f(x) = y \, \text{ for  some } x\in X\}$.
+\end{SaveConcept}
+
+\begin{SaveConcept}{definition}[
+		key=matprod,
+		title={Product of Matrices}
+	][2]
+        $T:\bbR^m\rightarrow\bbR^n, T(\vec x)=A\vec x$ and $S:\bbR^n\rightarrow\bbR^p, S(\vec y)=B\vec y$ be linear transformations with associated standard matrices $A$ and $B$ respectively. Then   $BA$ is defined the to be unique matrix associated to the composition $S\circ T: \bbR^m\rightarrow \bbR^p$.
+\end{SaveConcept}
+
+
+
+
+\begin{SaveConcept}{definition}[
+		key=surinj,
+		title={Surjective and Injective}
+	][2]
+	The function  $f:X\to Y$ is {\bf surjective} or {\bf onto} if  for all $y \in Y$, there exists some $x\in X$ such that $f(x) = y$. In this case, we also say "$f$ is a  {\bf surjection.}"
+        The function  $f$ is {\bf injective} or {\bf one-to-one} if for all $y \in Y$ there exists at most one $x \in X$ such that $f(x) = y$. Equivalently: whenever $f(x_1) = f(x_2)$ for $x_1, x_2 \in X$, it follows that $x_1 = x_2$. In this case, we also say "$f$ is an {\bf injection.}".
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=bijective,
+		title={Bijective}
+	][2]
+        We say the function $f$ is {\bf bijective} or {\bf bijective} if for all $y \in Y$ there exists exactly one $x \in X$ such that $f(x) = y$.	In other words, the function $f$ is {\bf bijective} if it is injective and surjective.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=invfun,
+		title={Invertible Function}
+	][2]
+        Let $X$ and $Y$ be sets and $f:X \to Y$ be a function. We say $f$ is \textbf{invertible} if there exists another function $g:Y\to X$ such that $f\circ g (y)=y$ for all $y\in Y$ and $g\circ f(x)=x$ for all $x\in X.$ Such a function $g$, if exists, is called the inverse of $f$ and is denoted by $f^{-1}$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=invtrans,
+		title={Invertiblity (Transformations)}
+	][2]
+        A linear transformation $\bbR^m \overset{T}\longrightarrow \mathbb R^n$ from $\mathbb R^m$ to $\mathbb R^n$ is \emph{invertible} if there exists a linear transformation $W \overset{S}\longrightarrow V$ such that $S(T(\vec{v}))=\vec{v}$ for all $\vec{v}\in \mathbb R^m$ and $T(S(\vec{w}))=\vec{w}$ for all $\vec{w}\in \mathbb R^n$. If $T$ is invertible, then the map $S$ with this property is unique and is called the {\bf inverse} of $T$, written $T^{-1}$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=invmat1,
+		title={Invertiblity (Matrices)}
+	][2]
+        A square matrix $A$ is said to be invertible if the linear transformation $T$ given by $T (\vec x) = Ax$ is invertible. In this case, we denote the inverse of $T$ by $T^{-1}$ and its associated standard matrix is denoted by $A^{-1}$. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=invmat2,
+		title={Invertiblity (Matrices)}
+	][2]
+        An $n\times n$ matrix $A$ is {\bf invertible} if there is an $n\times n$ matrix $B$ such that $AB=BA=I_n$, where $I_n$ is the $n\times n$ identity matrix. If $A$ is invertible, then the matrix $B$ such that $AB=BA=I_n$ is unique and is called the {\bf inverse} of $A$, written $A^{-1}$.
+\end{SaveConcept}
+\begin{SaveConcept}{theorem}[
+		key=thm2.2,
+		title={Matrix Product Linearity}
+	][2]
+        If $A$ is an $n \times m$ matrix, $\vec x$ and $\vec y$ are vectors in $\bbR^m$, and $k$ is a scalar, then
+        \begin{enumerate}
+		\item $A(\vec x + \vec y) = A\vec x + A\vec y$,
+		\item $A(k\vec x) = k(A\vec x)$.
+	\end{enumerate}
+\end{SaveConcept}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{SaveConcept}{definition}[
+		key=subspace,
+		title={Subspace}
+	][3]
+        A {\bf subspace} of $\bbR^n$ is a subset $W$ of $\bbR^n$ which contains $\vec{0}$ and is closed under addition and scalar multiplication. That is, a {\bf subspace} of $\bbR^n$ is a subset $W\subseteq \bbR^n$ such that 
+        \begin{enumerate}
+            \item $\vec{0}\in W$;
+            \item if $\vec x, \vec y \in W$, then also $\vec x + \vec y \in W$;
+            \item if $\vec x  \in W$ and $k$ is any scalar, then  also $k\vec x \in W$.
+        \end{enumerate}
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=lintrans,
+		title={Linear Transformation}
+	][3]
+
+	A {\bf linear transformation} from $\mathbb R^m$ to $\mathbb R^n$ is a mapping $\mathbb R^m \overset{T}\longrightarrow \mathbb R^n$  that satisfies:
+	\begin{enumerate}
+		\item $T(\vec x + \vec y) = T(\vec x) + T (\vec y)$ for all vectors $\vec x, \vec y \in \mathbb R^m$;
+		\item $ T(k \vec x) = k T(\vec x)$ for all vectors $\vec x \in \mathbb R^m$ and all scalars $k\in\bbR$.
+	\end{enumerate}
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=kernel,
+		title={Kernel}
+	][3]
+	The {\bf kernel} of a linear transformation $T:\mathbb R^m \longrightarrow \mathbb R^n$  is the set of all vectors $\vec v$ in the domain such that $T(\vec v) = \vec 0$. That is, 
+        $$ 
+        \ker(T) = \{ \vec v \in \mathbb R^m \, | \, T(\vec v) = \vec 0\}.
+        $$
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=lincomb3,
+		title={Linear Combination}
+	][3]
+	A {\bf linear combination} of the finitely many vectors $\vec v_1, \dots, \vec v_n$ in $V$ is an expression of the form 
+        $$
+        c_1 \vec v_1 + \dots + c_n \vec v_n
+        $$
+        where each $c_i$ is a scalar. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=span,
+		title={Span}
+	][3]
+        Let $\vec v_1, \vec v_2,\cdots, \vec v_m$ be vectors in $\mathbb R^n$. The set of {\it all} linear combinations of $\vec v_1, \vec v_2,\cdots, \vec v_m$ is called their \textbf{span}. That is 
+        \[
+         \spn(\vec v_1, \vec v_2,\cdots, \vec v_m) \, = \, \{ c_1 \vec v_1 + c_2 \vec v_2 + \dots + c_m \vec v_m \, | \, c_1, c_2,\cdots,c_m \in \bbR\}.
+        \]
+       If $\spn(\vec v_1, \vec v_2,\cdots, \vec v_m)=V$ then $\{\vec v_1, \vec v_2,\cdots, \vec v_m\}$ is called a \textbf{spanning set} for $V$, or is said to \textbf{span} $V$.
+\end{SaveConcept}
+
+\begin{SaveConcept}{definition}[
+		key=linrel,
+		title={Linear Relation}
+	][3]
+        Let $\vec v_1, \vec v_2, \cdots ,\vec v_n$ be vectors in a subspace $V$ of $\mathbb R^m$. A {\bf linear relation} among $\vec v_1, \vec v_2, \cdots ,\vec v_n$ is any equation of the form 
+        $$
+        c_1 \vec v_1  +  \dots + c_n \vec v_n = \vec{0},
+        $$
+        where $c_i$s are scalars.
+\end{SaveConcept}
+
+% \begin{SaveConcept}{definition}[
+% 		key=linrelonset,
+% 		title={Linear Relation}
+% 	][3]
+%         Let $\mathcal S$ be a (possibly infinite) subset of $V$. A {\bf linear relation} on $\mathcal S$ is any equation of the form 
+%         $$
+%         c_1 \vec v_1  +  \dots + c_n \vec v_n = \vec{0},
+%         $$
+%         where $\vec{v}_1,\ldots,\vec{v}_n$ are finitely many vectors from $\mathcal{S}$ and the $c_i$ are scalars.
+% \end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=lindep,
+		title={Linearly Dependent}
+	][3]
+        Let $\vec v_1, \vec v_2, \cdots ,\vec v_n$ be vectors in a subspace $V$ of $\mathbb R^m$. We say $\vec v_1, \vec v_2, \cdots ,\vec v_n$ are {\bf linearly dependent} if there are scalars $c_1,\ldots,c_n$ that are not all zero such that $c_1\vec{v}_1+\cdots+c_n\vec{v}_n=\vec{0}$.
+\end{SaveConcept}
+
+
+% \begin{SaveConcept}{definition}[
+% 		key=lindeponset,
+% 		title={Linearly Dependent}
+% 	][3]
+%         Let $V$ be a subspace and let $\mathcal{S}$ be a subset of $V$. Then $\mathcal{S}$ is {\bf linearly dependent} if there is a list of distinct vectors $\vec{v}_1,\ldots,\vec{v}_n$ in $\mathcal{S}$ and scalars $c_1,\ldots,c_n$ that are not all zero such that $c_1\vec{v}_1+\cdots+c_n\vec{v}_n=\vec{0}$.
+% \end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=linindep,
+		title={Linearly Independent}
+	][3]
+        Let $\vec v_1, \vec v_2, \cdots ,\vec v_n$ be vectors in a subspace $V$ of $\mathbb R^m$. We say $\vec v_1, \vec v_2, \cdots ,\vec v_n$ are  {\bf linearly independent} if $c_1\vec{v}_1+\cdots+c_n\vec{v}_n=\vec{0}$ has only one solution: $c_1=\cdots=c_n=0$. 
+\end{SaveConcept}
+
+% \begin{SaveConcept}{definition}[
+% 		key=linindeponset,
+% 		title={Linearly Independent}
+% 	][3]
+%         Let $V$ be a subspace and let $\mathcal{S}$ be a subset of $V$. Then $\mathcal{S}$ is  {\bf linearly independent} if for every list of distinct vectors $\vec{v}_1,\ldots,\vec{v}_n$ in $\mathcal{S}$ and for all scalars $c_1,\ldots,c_n\in\mathbb{R}$, if $c_1\vec{v}_1+\cdots+c_n\vec{v}_n=\vec{0}$ then $c_1=\cdots=c_n=0$.
+% \end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=basis,
+		title={Basis}
+	][3]
+        A {\bf basis} of a subspace $V$ of $\mathbb R^n$ is a linearly independent set of vectors in $V$ that spans $V$. Put differently, a {\bf basis} is a spanning set for $V$ which is linearly independent. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=dim,
+		title={Dimension}
+	][3]
+      Consider a subspace $V$ of $\mathbb R^n$. The number of vectors in \textbf{any} basis of $V$ is called the dimension of $V$ and is denoted by $\dim(V)$. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=ranknull,
+		title={Rank \& Nullity}
+	][3]
+       The {\bf rank} of a matrix $A$ is the dimension of $\im(T_A)$, the \textbf{nullity} of a matrix $A$ is the  dimension of $\ker(T_A)$, where $T_A:\mathbb R^n\to\mathbb R^m$ is the linear transformation defined by $T_A(\vec{x})=A\vec{x}$ for all $\vec{x}\in\mathbb R^n$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=coordinates,
+		title={Coordinates}
+	][3]
+        Suppose $\mathcal{B} = (\vec v_1, \ldots  , \vec v_n)$ is an ordered basis of a subspace $V$. The {\bf  $\mathcal B$-coordinates} of  $\vec v \in V$  are the unique scalars $a_i$ such that 
+        $$
+        \vec v = a_1 \vec v_1 + \dots + a_n \vec v_n. 
+        $$ 
+        The $\mathcal B$-coordinates are arranged into  a column vector, denoted  $[\vec v]_{\mathcal B}.$ That is,
+        $$ 
+        [\vec v]_{\mathcal B} = \begin{bmatrix} a_1 \\ \vdots \\ a_n  \end{bmatrix}.
+        $$
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=cocmat,
+		title={Change-of-coordinates Matrix}
+	][3]
+        If $\mathcal{B}=(\vec{b}_1,\ldots,\vec{b}_n)$ and $\mathcal{C}=(\vec{c}_1,\ldots,\vec{c}_n)$ are two ordered bases of a subspace $V$, the {\bf change-of-coordinates matrix} from $\mathcal{B}$ to $\mathcal{C}$ is the unique matrix $S$ such that $S[\vec{v}]_{\mathcal{B}}=[\vec{v}]_{\mathcal{C}}$ for all $\vec{v}\in V$. We usually use a subscript $\mathcal{B}\to\mathcal{C}$ (eg: $S_{\mathcal{B}\to\mathcal{C}}$) to demonstrate that $S$ changes $\mathcal B$ coordinate into $\mathcal C$-coordinates. The $i$-th column of $S$ is $[\vec{b}_i]_{\mathcal{C}}$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=bmat,
+		title={$\mathcal{B}$-Matrix}
+	][3]
+ If $T:\mathbb R^n\to \mathbb R^n$ is a linear transformation and if $\mathcal{B}=(\vec{b}_1,\ldots,\vec{b}_n)$ is a basis of $\mathbb R^n$, then the {\bf $\mathcal{B}$-matrix} of $T$ is the unique matrix $B$ such that $B[\vec{b}]_{\mathcal{B}}=[T(\vec{b})]_{\mathcal{B}}$ for all $\vec{b}\in \mathbb R^n$. It is usually denoted $[T]_{\mathcal{B}}$ and its $i$th column is $[T(\vec{b}_i)]_{\mathcal{B}}$.
+\end{SaveConcept}
+
+        % If $T:V\to V$ is a linear transformation of the subspace $V$ and if $\mathcal{B}=(\vec{v}_1,\ldots,\vec{v}_n)$ is a basis of $V$, then the {\bf $\mathcal{B}$-matrix} of $T$ is the unique matrix $A$ such that $A[\vec{v}]_{\mathcal{B}}=[T(\vec{v})]_{\mathcal{B}}$ for all $\vec{v}\in V$. It is usually denoted $[T]_{\mathcal{B}}$ and its $i$th column is $[T(\vec{v}_i)]_{\mathcal{B}}$.
+
+\begin{SaveConcept}{definition}[
+		key=simmat,
+		title={Similar Matrices}
+	][3]
+        Two $n\times n$ matrices $A$ and $B$ are {\bf similar} if there exists an invertible $n\times n$ matrix $S$ such that $B = S^{-1} A S$.
+\end{SaveConcept}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{SaveConcept}{definition}[
+		key=orthonoset,
+		title={Orthonormal Set}
+	][5]
+        A set of vectors $\vec u_1, \dots, \vec u_n$ is {\bf orthonormal} if $\vec u_i\cdot \vec u_j = 0 $ for  $ i \neq j$, and $\vec u_i\cdot \vec u_i = 1$ for all $i$. 
+\end{SaveConcept}
+
+\begin{SaveConcept}{definition}[
+		key=orthoset,
+		title={Orthogonal Set}
+	][5]
+        A set of vectors $\vec u_1, \dots, \vec u_n$ is {\bf orthogonal} if $\vec u_i\cdot \vec u_j = 0 $ for  $ i \neq j$. 
+\end{SaveConcept}
+
+\begin{SaveConcept}{definition}[
+		key=orthobasis,
+		title={Orthonormal and Orthogonal Basis}
+	][5]
+        An {\bf orthonormal basis} of a subspace $V$ is an orthonormal set in $V$ that is also a basis of $V$. An {\bf orthogonal basis} of a subspace $V$ is an orthogonal set in $V$ that is also a basis of $V$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=orthocomp,
+		title={Orthogonal Complement}
+	][5]
+	If $W$ is a subspace of $\mathbb R^n$, the {\bf orthogonal complement} of $W$ in $\mathbb R^n$ is the set
+	$$
+	W^\bot \ = \ \{\vec{v}\in \mathbb R^n \::\: \vec{v}\cdot \vec{w}=0\text{ for all $\vec{w}\in W$}\}.
+	$$
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=orthoproj,
+		title={Orthogonal Projection}
+	][5]
+        If $W$ is a subspace of $\mathbb R^n$ and if $\vec{v}\in \mathbb R^n$, the {\bf orthogonal projection} of $\vec{v}$ onto $W$ is the unique vector $\vec{w}\in W$ such that $\vec{v}-\vec{w}\in W^\bot$. The orthogonal projection of $\vec{v}$ onto $W$ is  denoted $\text{proj}_W(\vec{v})$.
+\end{SaveConcept}
+
+\begin{SaveConcept}{definition}[
+		key=orthotrans,
+		title={Orthogonal Linear Transformation - Orthogonal Matrix}
+	][5]
+            A linear transformation $T: \mathbb{R}^n\rightarrow\mathbb{R}^n$ is called orthogonal if $||T(\vec x)||=||\vec x||$ for all $\vec x\in\mathbb{R}^n.$ If $T(\vec x)=A\vec x$ is an orthogonal transformation, we say $A$ is an orthogonal matrix.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=leastsquare,
+		title={Least-Squares Solution}
+	][5]
+        If $A$ is an $m\times n$ matrix and $\vec{b}\in\mathbb R^m$, the vector $\vec{x}^*\in\mathbb R^n$ is a {\bf least-squares solution} of the linear system $A\vec{x}=\vec{b}$ if $\|A\vec{x}^*-\vec{b}\|\leq\|A\vec{x}-\vec{b}\|$ for all $\vec{x}\in\mathbb R^n$.
+\end{SaveConcept}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 6
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{SaveConcept}{definition}[
+		key=crosspdct,
+		title={Cross product in $\bbR^3$}
+	][6]
+        The cross product $\vec v \times  \vec w$ of two vectors $\vec v$ and $\vec w$ in $\bbR^3$ is the vector in $\bbR^3$ with the following three properties:
+        \begin{itemize}
+            \item $\vec v \times  \vec w$ is orthogonal to both $\vec v$ and $\vec w$.
+            \item $\|\vec v\times \vec w\|=\|\vec v\|\|\vec w\|\sin \theta$, where $\theta$, is the angle between $\vec v$ and $\vec w$, with $0 \leq  \theta \leq \pi$. This means that the magnitude of the vector $\vec v\times \vec w$ is the area of the parallelogram spanned by $\|\vec v\|$ and $\|\vec w\|$. 
+            \item The direction of $\vec v\times \vec w$ follows the right-hand rule
+        \end{itemize}
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=det2,
+		title={$2\times 2$ Determinant}
+	][6]
+	Let $A = \begin{bmatrix} a & b \\ c & d \end{bmatrix} $ be a $2 \times 2$ matrix. The {\bf determinant} of $A$ is the scalar $ad - bc$. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=det3,
+		title={$3\times 3$ Determinant}
+	][6]
+        If $A=[\vec v_1\:\:\vec v_2\:\:\vec v_3]$, be a $3\times 3$ matrix, then
+        $$
+        \det A=\vec v_3\cdot (\vec v_1\times \vec v_2). 
+        $$
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=elemmat,
+		title={an elementary matrix}
+	][6]
+        An \textbf{elementary matrix} is a matrix you get by applying an elementary row reduction step to the identity matrix.
+\end{SaveConcept}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%CHAPTER 7
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\begin{SaveConcept}{definition}[
+		key=diagonalizable,
+		title={Diagonalizable}
+	][7]
+        A linear transformation $\mathbb R^n \overset{T}\longrightarrow \mathbb R^n$ is {\bf diagonalizable} if  there is a basis $\mathcal{B}$ of $\mathbb R^n$ such that the $\mathcal{B}$-matrix $[T]_{\mathcal{B}}$ of $T$ is diagonal.\\ A matrix $A$ is {\bf diagonalizable} if the linear transformation defined by left multiplication by $A$ is diagonalizable.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=eigenvecval,
+		title={Eigenvector \& Eigenvalue}
+	][7]
+        An {\bf eigenvector} of a linear transformation  $\mathbb R^n \overset{T}\longrightarrow \mathbb R^n$ is any non-zero vector $\vec v \in \mathbb R^n$ such that $T(\vec v) = \lambda \vec v$ for some scalar $\lambda$. The scalar  $\lambda$ is called the {\bf eigenvalue} of $T$ corresponding to the eigenvector $\vec v$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=eigenbasis,
+		title={Eigenbasis}
+	][7]
+	Let $\mathbb R^n \overset{T}\longrightarrow \mathbb R^n$ be a linear transformation. An {\bf eigenbasis} of $\mathbb R^n$ for $T$ is a basis of $\mathbb R^n$ consisting of eigenvectors of $T$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=eigenspace,
+		title={Eigenspace}
+	][7]
+	If $\mathbb R^n \overset{T}\longrightarrow \mathbb R^n$ is a linear transformation of the vector space $\mathbb R^n$ and if $\lambda$ is an eigenvalue of $T$, then the subset
+	$$
+	V_{\lambda} = \{ \vec v \in \mathbb R^n \, | \, T(\vec v) = \lambda \vec v \} 
+	$$
+	consisting of all $\lambda$-eigenvectors (together with $\vec 0$) is a subspace of $V$, called the {\bf $\lambda$-eigenspace}, or the {\bf eigenspace corresponding to $\lambda$}.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=charpolmat,
+		title={Characteristic Polynomial of a Matrix}
+	][7]
+	The {\bf characteristic polynomial} of an $n\times n$ matrix $A$ is the degree $n$ polynomial 
+	$$
+        f_A(x) =  \text{det} (A - xI_n).
+        $$ 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=charpollt,
+		title={Characteristic Polynomial of a Linear Transformations}
+	][7]
+	Let $\mathbb R^n \overset{T}\longrightarrow \mathbb R^n$ be a linear transformation. The {\bf characteristic polynomial} of $T$ is the degree $n$ polynomial
+	$$
+        f_T(x) = \det (A - x I_n)
+        $$ 
+        where $A$ is the matrix of $T$ in {\it any} basis of $V$. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=algmult,
+		title={Algebraic Multiplicity}
+	][7]
+        Let $\mathbb R^n \overset{T}\longrightarrow \mathbb R^n$ be a linear transformation of a finite-dimensional vector space $\mathbb R^n$. The {\bf algebraic multiplicity} of an eigenvalue $\lambda$ is the largest power $r$ such that $(x-\lambda)^r$ divides the characteristic polynomial of $T$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=geomult,
+		title={Geometric Multiplicity}
+	][7]
+        The {\bf geometric multiplicity} of  $\lambda$ is the dimension of the $\lambda$-eigenspace or, equivalently, the maximal size of a linearly independent set of eigenvectors with eigenvalue $\lambda$.
+\end{SaveConcept}
+
+\begin{SaveConcept}{definition}[
+		key=trace,
+		title={Trace of a Matrix}
+	][7]
+        The sum of the diagonal entries of a square matrix $A$ is called the \textit{trace} of $A$, denoted by $\tr A$. 
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=orthodiagmap,
+		title={Orthogonally Diagonalizable map}
+	][7]
+	Let $T:\mathbb R^n\to \mathbb R^n$. We say that $T$ is {\bf orthogonally diagonalizable} if  $T$ has an orthonormal eigenbasis.
+\end{SaveConcept}
+
+\begin{SaveConcept}{definition}[
+		key=orthodiag,
+		title={Orthogonally Diagonalizable Matrix}
+	][7]
+	An $n\times n$ matrix $A$ is \emph{orthogonally diagonalizable} if there is an $n\times n$ orthogonal matrix $Q$ such that $Q^TAQ$ is a diagonal matrix.
+\end{SaveConcept}
+
+\begin{SaveConcept}{definition}[
+		key=trans,
+		title={Distribution Vectors and Transition Matrices}
+	][7]
+	A vector $\vec x$  in $\mathbb R^n$ is said to be a \textbf{distribution vector} if its components add up to $1$
+and all the components are positive or zero.
+A square matrix $A$ is said to be a \textbf{transition matrix (or stochastic matrix)} if all
+its columns are distribution vectors. This means that all the entries of a transition
+matrix are positive or zero, and the entries in each column add up to $1$.
+\end{SaveConcept}
+
+
+\begin{SaveConcept}{definition}[
+		key=regtrans,
+		title={Regular Transition Matrices}
+	][7]
+A transition matrix is said to be \textbf{positive} if all its entries are positive (meaning
+that all the entries are greater than 0).
+A transition matrix $A$ is said to be \textbf{regular (or eventually positive)} if the matrix $A^m$ is positive for some positive integer $m$
+\end{SaveConcept}
+

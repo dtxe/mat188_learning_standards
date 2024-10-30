@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage[most]{tcolorbox}
+\usepackage{lipsum}
+
+\newtcolorbox{solbox}{colback=white,
+colframe=blue,fonttitle=\bfseries,
+title=Solution}
+
+\begin{document}
+
+\begin{tcolorbox}[breakable, enhanced, title={124}]
+\lipsum[1]
+\lipsum[1]
+\lipsum[1]
+\lipsum[1]
+\lipsum[1]
+v
+\lipsum[1]
+\lipsum[1]
+\lipsum[1]
+\end{tcolorbox}
+
+\begin{solbox}[breakable, enhanced]
+\lipsum[1]
+\lipsum[1]
+\lipsum[1]
+\lipsum[1]\lipsum[1]
+\lipsum[1]
+\end{solbox}
+
+\end{document}
