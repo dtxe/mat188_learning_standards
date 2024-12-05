@@ -7,9 +7,12 @@ input_paths:
   standards_lookup_table: ../2024-Data/standards_lookup_table.xlsx
 
   # assessments
-  tutorial_glob: ../2024-Data/TUTData/PROCESSED/*/*_SBG.csv
+  # tutorial_glob: ../2024-Data/TUTData/PROCESSED/*/*_SBG.csv
   webwork_glob: ../2024-Data/WW/*.csv
-  midterm_glob: ../2024-Data/*Midterm*/*.csv
+  # midterm_glob: ../2024-Data/*Midterm*/*.csv
+
+  tutorial_consolidated: ../2024-Data/fullrosterMOD.csv
+  midterm_consolidated: ../2024-Data/EXData/midtermIdata.xlsx
 
   # manual overrides
   manual_scores: ../2024-Data/manual_scores.xlsx

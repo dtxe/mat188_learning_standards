@@ -5,8 +5,10 @@ Written for MAT188 at the University of Toronto
 
 
 ## Workflow
+1. Install Python, UV (package manager), and MikTex (LaTeX)
+    `winget install astral-sh.uv python.python.3.12 miktex.miktex`
 1. Install required packages
-    `pip install -r requirements.txt`
+    `uv sync`
 1. Download student progress data into `../Data`
     1. Download HTML-only Webwork student progress report webpages
     1. Gradescope exports
