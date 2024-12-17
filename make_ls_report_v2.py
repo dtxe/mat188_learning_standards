@@ -12,14 +12,10 @@ from types import SimpleNamespace
 from tqdm import tqdm
 
 
-def build_tex(config: SimpleNamespace,
-              row: pd.Series,
-              filename: Optional[str] = None):
-    filename = filename or row.name
+def build_tex(config: SimpleNamespace, row: pd.Series):
 
     # row.dropna(inplace=True)
-    subset_cols = row.drop('student', level=0).drop('fraction_achieved',
-                                                    level=0)
+    subset_cols = row.drop('student', level=0).drop('summary', level=0)
 
     with open("ls_report_page.tex", "r") as f:
         template = f.read()
@@ -41,22 +37,55 @@ def build_tex(config: SimpleNamespace,
     template = template.replace("REPLsummarytableREPL", '\n'.join(summary_tex))
 
     # build detailed table
-    rows = []
-    for modality, key in subset_cols.index:
-        if row[(modality, key)] == 0:
-            achieved = 'No'
-        elif row[(modality, key)] == 1:
-            achieved = 'Yes'
+    def achieved_to_text(val):
+        if val == 0:
+            # achieved = 'No'
+            achieved = r'\text{\sffamily X}'
+        elif val == 1:
+            # achieved = 'Yes'
+            achieved = r'\checkmark'
         else:
-            achieved = r'\textit{Not tested}'
+            # achieved = r'\textit{Not tested}'
+            achieved = '\t'
+        return achieved
 
-        tblrow = f'\\PulledLS{{{key}}} & {achieved} & {modality} \\\\ \\midrule'
-        rows.append(tblrow)
+    pivot = subset_cols.reset_index()
+    pivot = pivot.pivot(columns='modality',
+                        values=pivot.columns[2],
+                        index='standard')
+    pivot = pivot.map(achieved_to_text)
+    pivot.index = pivot.index.map(lambda x: f'\\PulledLS{{{x}}}')
+    # rows = pivot.to_latex()
+    rows = pandas_to_latex(pivot)
 
-    template = template.replace("REPLdetailedtableREPL", '\n'.join(rows))
+    template = template.replace("REPLdetailedtableREPL", rows)
 
     with open(config.output_dir + "/ls_reports/tex/combined.tex", "a") as f:
         f.write(template)
+
+
+def pandas_to_latex(df: pd.DataFrame):
+    rows = [pandas_to_latex_hdr(df)]
+    for i, row in df.iterrows():
+        rows.append(i + ' & ' + ' & '.join([str(x)
+                                            for x in row]) + r' \\ \midrule')
+
+    rows.append(r'''\bottomrule
+        \end{tabularx}''')
+
+    return '\n'.join(rows)
+
+
+def pandas_to_latex_hdr(df: pd.DataFrame):
+    cols = 'l|' * len(df.columns)
+    col_names = ' & '.join([f'\\textbf{{{x}}}' for x in df.columns])
+
+    return r'''
+    \begin{tabularx}{\textwidth}{||X| ''' + cols + r'''|}
+         \toprule
+         \textbf{Learning Standard}           & ''' + col_names + r'''   \\ \midrule \midrule
+    \endhead
+    '''
 
 
 def run(config: SimpleNamespace):
@@ -99,9 +128,7 @@ def run(config: SimpleNamespace):
     for ri, row in tqdm(student_progress.iterrows(),
                         desc='Building reports',
                         total=len(student_progress)):
-        filename = ri
-
-        build_tex(config, row, filename=filename)
+        build_tex(config, row)
 
     # end document
     with open(config.output_dir + "/ls_reports/tex/combined.tex", "a") as f:

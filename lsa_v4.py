@@ -21,9 +21,10 @@ import yaml
 
 nthreads = psutil.cpu_count(logical=False) - 1
 
+
 class Configs(SimpleNamespace):
 
-    def __init__(self, dictionary:dict, **kwargs):
+    def __init__(self, dictionary: dict, **kwargs):
         super().__init__(**kwargs)
         for key, value in dictionary.items():
             if isinstance(value, dict):
@@ -35,7 +36,8 @@ class Configs(SimpleNamespace):
         try:
             return super().__getattribute__(value)
         except AttributeError:
-            return None  
+            return None
+
 
 def extract_tutorial_number(x: str):
     rel = re.search(r'TUT(\d{4})', x)
@@ -204,7 +206,8 @@ def load_data(config: SimpleNamespace):
                           value_vars=tdc_graded_cols,
                           var_name='tut',
                           value_name='tut_gradegroup')
-    tdc_graded['tut'] = tdc_graded['tut'].str.extract(r'SBG(\d{1,2})').astype(int)
+    tdc_graded['tut'] = tdc_graded['tut'].str.extract(r'SBG(\d{1,2})').astype(
+        int)
 
     tdc_scores['is_graded'] = tdc_scores.apply(lambda x: (
         (x['UTORid'] == tdc_graded['UTORid']) &
@@ -212,8 +215,7 @@ def load_data(config: SimpleNamespace):
         (x['tut_gradegroup'] == tdc_graded['tut_gradegroup'])).sum() > 0,
                                                axis=1)
 
-    tdc_scores = tdc_scores.rename(
-        columns={'UTORid': 'login_name'})
+    tdc_scores = tdc_scores.rename(columns={'UTORid': 'login_name'})
     tdc_scores = tdc_scores[[
         'login_name', 'score_key', 'correct', 'is_graded'
     ]]
@@ -231,20 +233,21 @@ def load_data(config: SimpleNamespace):
 
                 # merge with roster
                 this_score = this_score.merge(roster[['Email', 'UTORid']],
-                                            how='left',
-                                            on='Email')
-                this_score = this_score.rename(columns={'UTORid': 'login_name'})
+                                              how='left',
+                                              on='Email')
+                this_score = this_score.rename(
+                    columns={'UTORid': 'login_name'})
 
                 # parse score key
                 ls_cols = [x for x in this_score.columns if '|' in x]
                 this_score = this_score[['login_name'] + ls_cols]
                 this_score.columns = ['login_name'
-                                    ] + [x.split('|')[1] for x in ls_cols]
+                                      ] + [x.split('|')[1] for x in ls_cols]
 
                 # stack into long format
                 this_score = this_score.melt(id_vars='login_name',
-                                            var_name='score_key',
-                                            value_name='correct')
+                                             var_name='score_key',
+                                             value_name='correct')
 
                 # check if correct has type string, convert to int
                 this_score['correct'] = this_score['correct'].map({
@@ -256,39 +259,41 @@ def load_data(config: SimpleNamespace):
 
                 scores.append(this_score)
 
+    if config.input_paths.midterm_consolidated_glob:
+        for file in glob.glob(config.input_paths.midterm_consolidated_glob):
+            print('Loading ' + file)
+            midterm_data = pd.read_excel(file)
 
-    if config.input_paths.midterm_consolidated:
-        print('Loading ' + config.input_paths.midterm_consolidated)
-        midterm_data = pd.read_excel(config.input_paths.midterm_consolidated)
-        
-        # merge with roster
-        midterm_data = midterm_data.merge(roster[['Email', 'UTORid']],
-                                        how='left',
-                                        on='Email')
-        midterm_data = midterm_data.rename(columns={'UTORid': 'login_name'})
+            # merge with roster
+            midterm_data = midterm_data.merge(roster[['Email', 'UTORid']],
+                                              how='left',
+                                              on='Email')
+            midterm_data = midterm_data.rename(
+                columns={'UTORid': 'login_name'})
 
-        # parse score key
-        ls_cols = [x for x in midterm_data.columns if re.match(r'^ex\d\-\d\-\d{1,2}', x)]
-        midterm_data = midterm_data[['login_name'] + ls_cols]
-        midterm_data.columns = ['login_name'
-                                ] + ls_cols
+            # parse score key
+            ls_cols = [
+                x for x in midterm_data.columns
+                if re.match(r'^ex\d\-\d\-\d{1,2}', x)
+            ]
+            midterm_data = midterm_data[['login_name'] + ls_cols]
+            midterm_data.columns = ['login_name'] + ls_cols
 
-        # stack into long format
-        midterm_data = midterm_data.melt(id_vars='login_name',
-                                        var_name='score_key',
-                                        value_name='correct')
-        midterm_data = midterm_data.dropna(subset=['login_name'])
+            # stack into long format
+            midterm_data = midterm_data.melt(id_vars='login_name',
+                                             var_name='score_key',
+                                             value_name='correct')
+            midterm_data = midterm_data.dropna(subset=['login_name'])
 
-        # check if correct has type string, convert to int
-        midterm_data['correct'] = midterm_data['correct'].map({
-            'TRUE': 1,
-            'FALSE': 0,
-            True: 1,
-            False: 0
-        })
+            # check if correct has type string, convert to int
+            midterm_data['correct'] = midterm_data['correct'].map({
+                'TRUE': 1,
+                'FALSE': 0,
+                True: 1,
+                False: 0
+            })
 
-        scores.append(midterm_data)
-
+            scores.append(midterm_data)
 
     # concatenate all scores
     scores = pd.concat(scores, ignore_index=True)
@@ -393,10 +398,17 @@ def run(config: SimpleNamespace):
     modalities = lsref['modality'].unique()
     for this_modality in modalities:
         this_modality_standards = standards_achieved.loc[:, this_modality]
-        standards_achieved.loc[:,
-                               ('fraction_achieved',
-                                this_modality)] = this_modality_standards.mean(
-                                    axis=1, skipna=True)
+        standards_achieved.loc[:, (
+            'summary',
+            f'frac_{this_modality}')] = this_modality_standards.mean(
+                axis=1, skipna=True)
+        standards_achieved.loc[:, (
+            'summary',
+            f'achieved_{this_modality}')] = this_modality_standards.sum(
+                axis=1, skipna=True)
+        standards_achieved.loc[:, (
+            'summary',
+            f'count_{this_modality}')] = this_modality_standards.count(axis=1)
 
     # Join student names for easy lookup
     roster.set_index('UTORid', inplace=True)
@@ -408,13 +420,11 @@ def run(config: SimpleNamespace):
     standards_achieved[('student',
                         'last_name')] = roster.loc[standards_achieved.index,
                                                    'Last Name']
-    standards_achieved[('student', 'SID')] = roster.loc[standards_achieved.index,
-                                                        'SID']
+    standards_achieved[('student',
+                        'SID')] = roster.loc[standards_achieved.index, 'SID']
     standards_achieved.sort_index(axis=0, inplace=True)
 
     standards_achieved.to_csv(config.output_dir + '/standards_achieved.csv')
-
-
 
 
 #%% Main
