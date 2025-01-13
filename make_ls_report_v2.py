@@ -1,5 +1,3 @@
-from typing import Optional
-
 import os
 import os.path
 import shutil
@@ -7,12 +5,12 @@ import pandas as pd
 import datetime
 import argparse
 import yaml
-from types import SimpleNamespace
+from Configs import Configs
 
 from tqdm import tqdm
 
 
-def build_tex(config: SimpleNamespace, row: pd.Series):
+def build_tex(config: Configs, row: pd.Series):
 
     # row.dropna(inplace=True)
     subset_cols = row.drop('student', level=0).drop('summary', level=0)
@@ -39,13 +37,10 @@ def build_tex(config: SimpleNamespace, row: pd.Series):
     # build detailed table
     def achieved_to_text(val):
         if val == 0:
-            # achieved = 'No'
             achieved = r'\text{\sffamily X}'
         elif val == 1:
-            # achieved = 'Yes'
             achieved = r'\checkmark'
         else:
-            # achieved = r'\textit{Not tested}'
             achieved = '\t'
         return achieved
 
@@ -65,30 +60,38 @@ def build_tex(config: SimpleNamespace, row: pd.Series):
 
 
 def pandas_to_latex(df: pd.DataFrame):
-    rows = [pandas_to_latex_hdr(df)]
-    for i, row in df.iterrows():
-        rows.append(i + ' & ' + ' & '.join([str(x)
-                                            for x in row]) + r' \\ \midrule')
+    '''
+    Convert DataFrame to LaTeX table using tabularx.
+    We can't use the built-in to_latex() method because tabular doesn't support multi-page tables and dynamic column widths.
+    '''
 
-    rows.append(r'''\bottomrule
-        \end{tabularx}''')
-
-    return '\n'.join(rows)
-
-
-def pandas_to_latex_hdr(df: pd.DataFrame):
+    # build header
     cols = 'l|' * len(df.columns)
     col_names = ' & '.join([f'\\textbf{{{x}}}' for x in df.columns])
 
-    return r'''
+    hdr = r'''
     \begin{tabularx}{\textwidth}{||X| ''' + cols + r'''|}
          \toprule
          \textbf{Learning Standard}           & ''' + col_names + r'''   \\ \midrule \midrule
     \endhead
     '''
 
+    # setup output list
+    rows = [hdr]
 
-def run(config: SimpleNamespace):
+    # build each row
+    for i, row in df.iterrows():
+        rows.append(i + ' & ' + ' & '.join([str(x)
+                                            for x in row]) + r' \\ \midrule')
+
+    # build footer
+    rows.append(r'''\bottomrule
+        \end{tabularx}''')
+
+    return '\n'.join(rows)
+
+
+def run(config: Configs):
     student_progress = pd.read_csv(config.output_dir +
                                    "/standards_achieved.csv",
                                    header=[0, 1],
@@ -148,13 +151,6 @@ def run(config: SimpleNamespace):
     print(f'Built PDF in {(datetime.datetime.now() - t1).total_seconds()} s.')
 
 
-def to_namespace(d: dict):
-    for k, v in d.items():
-        if isinstance(v, dict):
-            d[k] = to_namespace(v)
-    return SimpleNamespace(**d)
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Build learning standard reports.')
@@ -169,6 +165,6 @@ if __name__ == '__main__':
 
     with open(args.config, 'r') as f:
         config = yaml.safe_load(f)
-    config = to_namespace(config | args.__dict__)
+    config = Configs(config | args.__dict__)
 
     run(config)

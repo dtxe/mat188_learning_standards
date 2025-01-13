@@ -10,9 +10,11 @@ input_paths:
   webwork_glob: ../2024-Data/WW/*.csv
   midterm_consolidated_glob: ../2024-Data/EXData/*.xlsx
 
-  tutorial_consolidated: ../2024-Data/fullrosterMOD-CameliaSamModified.xlsx
+  tutorial_consolidated: 
+    - ../2024-Data/fullrosterMOD-CameliaSamModified.xlsx
+    - ../2024-Data/fullrosterRES.csv
 
   # manual overrides
   manual_scores: ../2024-Data/manual_scores.xlsx
 
-output_dir: ../2024-Output
+output_dir: ../2024-Output/resubmission

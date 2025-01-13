@@ -12,31 +12,9 @@ import wwparse_v2
 from tqdm import tqdm
 import re
 import argparse
-import multiprocessing as mp
-import psutil
-import functools
-from types import SimpleNamespace
+from Configs import Configs
 import os, os.path
 import yaml
-
-nthreads = psutil.cpu_count(logical=False) - 1
-
-
-class Configs(SimpleNamespace):
-
-    def __init__(self, dictionary: dict, **kwargs):
-        super().__init__(**kwargs)
-        for key, value in dictionary.items():
-            if isinstance(value, dict):
-                self.__setattr__(key, Configs(value))
-            else:
-                self.__setattr__(key, value)
-
-    def __getattribute__(self, value):
-        try:
-            return super().__getattribute__(value)
-        except AttributeError:
-            return None
 
 
 def extract_tutorial_number(x: str):
@@ -67,7 +45,7 @@ def grade_by_ls(student: tuple, lsref):
 
         # get correctness for each question
         question_isgraded = [
-            ~np.any(this_student_scores.loc[x, 'is_graded'] == False)
+            np.any(this_student_scores.loc[x, 'is_graded'] == True)
             if x in this_student_scores.index else True for x in question_keys
         ]
         question_iscorrect = [
@@ -91,7 +69,7 @@ def grade_by_ls(student: tuple, lsref):
     return this_standards_achieved
 
 
-def load_data(config: SimpleNamespace):
+def load_data(config: Configs):
     #######################################################################
     ## Data loading
 
@@ -136,130 +114,74 @@ def load_data(config: SimpleNamespace):
 
         # a question is correct if all parts are correct
         this_score['correct'] = this_score['score'] == 1
+        this_score['is_graded'] = True
 
         scores.append(this_score)
 
     ##### TUTORIALS #####
-    # for filename in glob.glob(config.input_paths.tutorial_glob):
-    #     print(f'Loading {filename}...')
-    #     this_score = pd.read_csv(filename)
-    #     this_score['SID'] = pd.to_numeric(this_score['SID'], errors='coerce')
+    if isinstance(config.input_paths.tutorial_consolidated, str):
+        config.input_paths.tutorial_consolidated = [
+            config.input_paths.tutorial_consolidated
+        ]
+    
+    for this_file in config.input_paths.tutorial_consolidated:
+        ext = os.path.splitext(this_file)[1]
+        print(f'Loading {this_file}...')
+        if ext.lower() == '.csv':
+            tdc = pd.read_csv(this_file)
+        elif ext.lower() == '.xlsx':
+            tdc = pd.read_excel(this_file)
+        
+        tdc_score_keys = [
+            x for x in tdc.columns
+            if re.match(r'^tut\d{1,2}[\.\-]\d[\.\-]\d{1,2}$', x)
+        ]
+        tdc_scores = tdc.melt(id_vars=['UTORid'],
+                            value_vars=tdc_score_keys,
+                            var_name='score_key',
+                            value_name='correct')
+        tdc_scores[['tut',
+                    'tut_gradegroup']] = tdc_scores['score_key'].str.extract(
+                        r'tut(\d{1,2})[\.\-](\d)[\.\-]\d{1,2}')
+        tdc_scores['tut'] = tdc_scores['tut'].astype(int)
+        tdc_scores['tut_gradegroup'] = tdc_scores['tut_gradegroup'].astype(int)
 
-    #     # merge with roster
-    #     this_score = this_score.merge(roster[['Email', 'UTORid']],
-    #                                   how='left',
-    #                                   on='Email')
-    #     email_merged = this_score[~this_score['UTORid'].isna()]
-    #     email_unmerged = this_score[this_score['UTORid'].isna()]
-    #     email_unmerged = email_unmerged.drop(
-    #         columns=['Email', 'UTORid']).merge(roster[['SID', 'UTORid']],
-    #                                            how='left',
-    #                                            on='SID')
-    #     this_score = pd.concat([email_merged, email_unmerged])
-    #     this_score = this_score.rename(columns={'UTORid': 'login_name'})
+        # normalize score_key
+        tdc_scores['score_key'] = tdc_scores['score_key'].str.replace('.', '-')
 
-    #     # parse score key
-    #     ls_cols = [
-    #         x for x in this_score.columns
-    #         if re.match(r'^tut\d{1,2}\-\d\-\d{1,2}$', x)
-    #     ]
-    #     this_score = this_score[['login_name', 'SBG'] + ls_cols]
+        # identify which questions are graded based on listed grading group
+        tdc_graded_cols = [x for x in tdc.columns if re.match(r'SBG\d{1,2}', x)]
 
-    #     this_score = this_score.melt(id_vars=['login_name', 'SBG'],
-    #                                  var_name='score_key',
-    #                                  value_name='correct')
-    #     this_score['score_key_sbg'] = this_score['score_key'].apply(
-    #         lambda x: re.match(r'^tut\d{1,2}\-(\d)\-\d{1,2}$', x).group(1))
+        if len(tdc_graded_cols) > 0:
+            tdc_graded = tdc.melt(id_vars=['UTORid'],
+                                value_vars=tdc_graded_cols,
+                                var_name='tut',
+                                value_name='tut_gradegroup')
+            tdc_graded['tut'] = tdc_graded['tut'].str.extract(r'SBG(\d{1,2})').astype(
+                int)
 
-    #     # identify graded questions
-    #     # method: from tutorial CSV files
-    #     # this_score['is_graded'] = this_score['SBG'].astype(
-    #     #     int) == this_score['score_key_sbg'].astype(int)
+            tdc_scores['is_graded'] = tdc_scores.apply(lambda x: (
+                (x['UTORid'] == tdc_graded['UTORid']) &
+                (x['tut'] == tdc_graded['tut']) &
+                (x['tut_gradegroup'] == tdc_graded['tut_gradegroup'])).sum() > 0,
+                                                    axis=1)
 
-    #     this_score = this_score[[
-    #         'login_name', 'score_key', 'correct', 'is_graded'
-    #     ]]
+            # if graded questions are explicitly given via SBG numbers, then use that
+            tdc_scores.loc[:,'correct'] = tdc_scores['correct'].fillna(False)
 
-    #     scores.append(this_score)
+        else:
+            # if SBG numbers aren't given, then questions are graded if not NA
+            # tdc_scores['is_graded'] = tdc_scores['correct'].notna()
+            tdc_scores['is_graded'] = tdc_scores['correct'] == True
 
-    tdc = pd.read_csv(config.input_paths.tutorial_consolidated)
-    tdc = tdc.fillna(False)
-    tdc_score_keys = [
-        x for x in tdc.columns
-        if re.match(r'^tut\d{1,2}[\.\-]\d[\.\-]\d{1,2}$', x)
-    ]
-    tdc_scores = tdc.melt(id_vars=['UTORid'],
-                          value_vars=tdc_score_keys,
-                          var_name='score_key',
-                          value_name='correct')
-    tdc_scores[['tut',
-                'tut_gradegroup']] = tdc_scores['score_key'].str.extract(
-                    r'tut(\d{1,2})[\.\-](\d)[\.\-]\d{1,2}')
-    tdc_scores['tut'] = tdc_scores['tut'].astype(int)
-    tdc_scores['tut_gradegroup'] = tdc_scores['tut_gradegroup'].astype(int)
-
-    # normalize score_key
-    tdc_scores['score_key'] = tdc_scores['score_key'].str.replace('.', '-')
-
-    tdc_graded_cols = [x for x in tdc.columns if re.match(r'SBG\d{1,2}', x)]
-    tdc_graded = tdc.melt(id_vars=['UTORid'],
-                          value_vars=tdc_graded_cols,
-                          var_name='tut',
-                          value_name='tut_gradegroup')
-    tdc_graded['tut'] = tdc_graded['tut'].str.extract(r'SBG(\d{1,2})').astype(
-        int)
-
-    tdc_scores['is_graded'] = tdc_scores.apply(lambda x: (
-        (x['UTORid'] == tdc_graded['UTORid']) &
-        (x['tut'] == tdc_graded['tut']) &
-        (x['tut_gradegroup'] == tdc_graded['tut_gradegroup'])).sum() > 0,
-                                               axis=1)
-
-    tdc_scores = tdc_scores.rename(columns={'UTORid': 'login_name'})
-    tdc_scores = tdc_scores[[
-        'login_name', 'score_key', 'correct', 'is_graded'
-    ]]
-    scores.append(tdc_scores)
+        tdc_scores = tdc_scores.rename(columns={'UTORid': 'login_name'})
+        tdc_scores = tdc_scores[[
+            'login_name', 'score_key', 'correct', 'is_graded'
+        ]]
+        scores.append(tdc_scores)
 
     # load midterm data
-    if config.compute_exams:
-        if config.input_paths.midterm_glob:
-            for filename in glob.glob(config.input_paths.midterm_glob):
-                print(f'Loading {filename}...')
-                this_score = pd.read_csv(filename)
-
-                # remove sum rows
-                this_score = this_score[~this_score['SID'].isna()]
-
-                # merge with roster
-                this_score = this_score.merge(roster[['Email', 'UTORid']],
-                                              how='left',
-                                              on='Email')
-                this_score = this_score.rename(
-                    columns={'UTORid': 'login_name'})
-
-                # parse score key
-                ls_cols = [x for x in this_score.columns if '|' in x]
-                this_score = this_score[['login_name'] + ls_cols]
-                this_score.columns = ['login_name'
-                                      ] + [x.split('|')[1] for x in ls_cols]
-
-                # stack into long format
-                this_score = this_score.melt(id_vars='login_name',
-                                             var_name='score_key',
-                                             value_name='correct')
-
-                # check if correct has type string, convert to int
-                this_score['correct'] = this_score['correct'].map({
-                    'TRUE': 1,
-                    'FALSE': 0,
-                    True: 1,
-                    False: 0
-                })
-
-                scores.append(this_score)
-
-    if config.input_paths.midterm_consolidated_glob:
+    if config.compute_exams and config.input_paths.midterm_consolidated_glob:
         for file in glob.glob(config.input_paths.midterm_consolidated_glob):
             print('Loading ' + file)
             midterm_data = pd.read_excel(file)
@@ -292,6 +214,7 @@ def load_data(config: SimpleNamespace):
                 True: 1,
                 False: 0
             })
+            midterm_data['is_graded'] = True
 
             scores.append(midterm_data)
 
@@ -321,7 +244,7 @@ def load_data(config: SimpleNamespace):
     return scores, roster, lsref
 
 
-def run(config: SimpleNamespace):
+def run(config: Configs):
     scores, roster, lsref = load_data(config)
 
     #######################################################################
@@ -363,27 +286,6 @@ def run(config: SimpleNamespace):
     # remove empty standards with no associated items
     lsref = lsref[~lsref['reqs'].isna()]
 
-    # initialize output table
-    # standards_achieved = pd.DataFrame(index=scores['login_name'].unique(),
-    #                                   columns=pd.MultiIndex.from_frame(lsref[[
-    #                                       'modality', 'standard'
-    #                                   ]].drop_duplicates()))
-
-    # with multiple threads, call the grading function for each student
-    # with mp.Pool(nthreads) as p:
-    #     standards_achieved = pd.concat(tqdm(
-    #         p.imap_unordered(
-    #             functools.partial(grade_by_ls, lsref=lsref),
-    #             zip(roster['UTORid'].unique(), [
-    #                 scores[scores['login_name'] == this_student].set_index(
-    #                     'score_key')
-    #                 for this_student in roster['UTORid'].unique()
-    #             ]),
-    #             chunksize=10,
-    #         ),
-    #         total=len(roster['UTORid'].unique()),
-    #         desc='Evaluating learning standards by student'),
-    #                                    axis=1).T
     standards_achieved = []
     for this_student in tqdm(roster['UTORid'].unique(),
                              desc='Evaluating learning standards by student'):
@@ -436,7 +338,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('config', type=str)
     parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--compute-exams', action='store_true')
+    parser.add_argument('--no-exams', dest='compute_exams', action='store_false')
     parser.add_argument('--generate-reports', action='store_true')
     args = parser.parse_args(
     ) if 'ipykernel' not in sys.modules else parser.parse_args(
